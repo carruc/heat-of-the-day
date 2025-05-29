@@ -286,13 +286,13 @@ const HeatmapCalendar = ({
         {/* Action buttons */}
         <div className="heatmap-action-buttons">
           <button 
-            className="btn btn-primary"
+            className="btn btn-primary btn-project"
             onClick={onNewProject}
           >
             + New Project
           </button>
           <button 
-            className="btn btn-secondary"
+            className="btn btn-secondary btn-event"
             onClick={onNewEvent}
           >
             + New Event
