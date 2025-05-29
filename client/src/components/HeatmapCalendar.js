@@ -16,7 +16,9 @@ const HeatmapCalendar = ({
   onProjectDelete,
   onProjectEdit,
   onEventEdit,
-  onEventDelete
+  onEventDelete,
+  onNewProject,
+  onNewEvent
 }) => {
   const [daysToShow, setDaysToShow] = useState(30);
   const [hoveredCell, setHoveredCell] = useState(null);
@@ -230,14 +232,19 @@ const HeatmapCalendar = ({
         {/* Date headers */}
         <div className="date-headers">
           <div className="project-column-header">Projects</div>
-          {dateRange.map((date, index) => (
-            <div key={index} className="date-header">
-              <span className="date-day">{date.getDate()}</span>
-              <span className="date-weekday">
-                {date.toLocaleDateString('en-US', { weekday: 'short' })}
-              </span>
-            </div>
-          ))}
+          {dateRange.map((date, index) => {
+            const today = new Date();
+            const isPastDate = date < today && date.toDateString() !== today.toDateString();
+            
+            return (
+              <div key={index} className={`date-header ${isPastDate ? 'past-date' : ''}`}>
+                <span className="date-day">{date.getDate()}</span>
+                <span className="date-weekday">
+                  {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                </span>
+              </div>
+            );
+          })}
         </div>
 
         {/* Project rows - Implements D1.1, D3, D7, D8 */}
@@ -275,6 +282,22 @@ const HeatmapCalendar = ({
             ))}
           </div>
         )}
+
+        {/* Action buttons */}
+        <div className="heatmap-action-buttons">
+          <button 
+            className="btn btn-primary"
+            onClick={onNewProject}
+          >
+            + New Project
+          </button>
+          <button 
+            className="btn btn-secondary"
+            onClick={onNewEvent}
+          >
+            + New Event
+          </button>
+        </div>
       </div>
 
       {/* Context menu for cells */}
@@ -394,11 +417,13 @@ const ProjectRow = ({
 
           const hasDeadline = cellData.events.some(e => e.type === 'deadline');
           const hasMilestone = cellData.events.some(e => e.type === 'milestone');
+          const today = new Date();
+          const isPastDate = date < today && date.toDateString() !== today.toDateString();
 
           return (
             <div
               key={dateIndex}
-              className={`heatmap-cell ${hasDeadline ? 'has-deadline' : ''} ${hasMilestone ? 'has-milestone' : ''}`}
+              className={`heatmap-cell ${hasDeadline ? 'has-deadline' : ''} ${hasMilestone ? 'has-milestone' : ''} ${isPastDate ? 'past-date' : ''}`}
               style={{ backgroundColor: cellData.color }}
               onContextMenu={(e) => onCellContextMenu(e, project, date)}
               onMouseEnter={() => onCellHover({
@@ -432,9 +457,11 @@ const ProjectRow = ({
           </div>
           {dateRange.map((date, dateIndex) => {
             const cellData = heatmapData[date.toISOString()] || { events: [] };
+            const today = new Date();
+            const isPastDate = date < today && date.toDateString() !== today.toDateString();
             
             return (
-              <div key={dateIndex} className="event-names-cell">
+              <div key={dateIndex} className={`event-names-cell ${isPastDate ? 'past-date' : ''}`}>
                 {cellData.events.map(event => (
                   <div
                     key={event.id}

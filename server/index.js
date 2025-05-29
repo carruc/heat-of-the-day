@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const { v4: uuidv4 } = require('uuid');
 const { isAfter, parseISO } = require('date-fns');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,7 +12,12 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '../client/build')));
+
+// Only serve static files in production when build directory exists
+const buildPath = path.join(__dirname, '../client/build');
+if (fs.existsSync(buildPath)) {
+  app.use(express.static(buildPath));
+}
 
 // In-memory data store (for simplicity - in production, use a database)
 let projects = [];
@@ -297,9 +303,14 @@ app.get('/api/analytics/heatmap', (req, res) => {
   res.json(heatmapData);
 });
 
-// Serve React app for all other routes
+// Serve React app for all other routes (only in production)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/build/index.html'));
+  const buildIndexPath = path.join(__dirname, '../client/build/index.html');
+  if (fs.existsSync(buildIndexPath)) {
+    res.sendFile(buildIndexPath);
+  } else {
+    res.status(404).json({ error: 'Client build not found. Run npm run build in client directory for production.' });
+  }
 });
 
 // Error handling middleware

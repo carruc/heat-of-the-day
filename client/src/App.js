@@ -200,29 +200,6 @@ function App() {
 
   return (
     <div className="app">
-      <header className="app-header">
-        <div className="app-header-content">
-          <h1>Heat of the Day</h1>
-          <p className="text-secondary">Task management and long-term planning</p>
-        </div>
-        
-        {/* Action buttons - Implements D5, D6 */}
-        <div className="app-header-actions">
-          <button 
-            className="btn btn-secondary"
-            onClick={() => setShowEventModal(true)}
-          >
-            + New Event
-          </button>
-          <button 
-            className="btn btn-primary"
-            onClick={() => setShowProjectModal(true)}
-          >
-            + New Project
-          </button>
-        </div>
-      </header>
-
       {/* Error display */}
       {error && (
         <div className="error-banner">
@@ -252,6 +229,8 @@ function App() {
             onProjectEdit={handleEditProject}
             onEventEdit={handleEditEvent}
             onEventDelete={handleDeleteEvent}
+            onNewProject={() => setShowProjectModal(true)}
+            onNewEvent={() => setShowEventModal(true)}
           />
         </section>
 

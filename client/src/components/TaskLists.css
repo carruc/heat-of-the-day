@@ -1,5 +1,7 @@
 /* Task Lists Styles */
 .task-lists {
+  display: flex;
+  flex-direction: column;
   padding: var(--spacing-lg);
 }
 
@@ -16,7 +18,7 @@
 /* Project cards grid */
 .project-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
   gap: var(--spacing-lg);
   margin-bottom: var(--spacing-xl);
 }
@@ -280,7 +282,7 @@
 /* Responsive design */
 @media (max-width: 1200px) {
   .project-cards-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: var(--spacing-md);
   }
 }
@@ -288,10 +290,6 @@
 @media (max-width: 768px) {
   .task-lists {
     padding: var(--spacing-md);
-  }
-  
-  .task-lists-header {
-    margin-bottom: var(--spacing-lg);
   }
   
   .project-cards-grid {

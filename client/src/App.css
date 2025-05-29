@@ -6,38 +6,6 @@
   background-color: var(--background);
 }
 
-/* Header styles */
-.app-header {
-  background-color: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: var(--spacing-lg) var(--spacing-xl);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: var(--shadow-sm);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.app-header-content h1 {
-  margin: 0;
-  color: var(--text-primary);
-  font-size: 1.75rem;
-  font-weight: 700;
-}
-
-.app-header-content p {
-  margin: 0;
-  font-size: 0.875rem;
-}
-
-.app-header-actions {
-  display: flex;
-  gap: var(--spacing-md);
-  align-items: center;
-}
-
 /* Error banner */
 .error-banner {
   background-color: var(--error-color);
@@ -77,7 +45,7 @@
   padding: var(--spacing-xl);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-lg);
   max-width: 100%;
   overflow-x: hidden;
 }
@@ -88,6 +56,16 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
+}
+
+/* Action buttons section positioned under heatmap */
+.action-buttons-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-top: calc(-1 * var(--spacing-lg));
+  margin-bottom: var(--spacing-md);
 }
 
 .tasklists-section {
@@ -121,14 +99,6 @@
 
 /* Responsive design */
 @media (max-width: 1024px) {
-  .app-header {
-    padding: var(--spacing-md) var(--spacing-lg);
-  }
-  
-  .app-header-content h1 {
-    font-size: 1.5rem;
-  }
-  
   .app-main {
     padding: var(--spacing-lg);
     gap: var(--spacing-lg);
@@ -136,21 +106,19 @@
 }
 
 @media (max-width: 768px) {
-  .app-header {
-    flex-direction: column;
-    gap: var(--spacing-md);
-    align-items: flex-start;
-    padding: var(--spacing-md);
-  }
-  
-  .app-header-actions {
-    width: 100%;
-    justify-content: flex-end;
-  }
-  
   .app-main {
     padding: var(--spacing-md);
     gap: var(--spacing-md);
+  }
+  
+  .action-buttons-section {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .action-buttons-section .btn {
+    width: 100%;
+    justify-content: center;
   }
   
   .error-banner {
@@ -160,21 +128,14 @@
 }
 
 @media (max-width: 480px) {
-  .app-header-content h1 {
-    font-size: 1.25rem;
+  .app-main {
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
   }
   
-  .app-header-content p {
-    font-size: 0.75rem;
-  }
-  
-  .app-header-actions {
-    flex-direction: column;
-    width: 100%;
-  }
-  
-  .app-header-actions .btn {
-    width: 100%;
-    justify-content: center;
+  .action-buttons-section {
+    gap: var(--spacing-xs);
+    margin-top: calc(-1 * var(--spacing-md));
+    margin-bottom: var(--spacing-sm);
   }
 } 

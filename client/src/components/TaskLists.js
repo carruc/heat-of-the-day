@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Check, X, ChevronDown, ChevronRight, Eye, EyeOff, Edit, Trash2 } from 'lucide-react';
+import { Plus, Check, ChevronDown, ChevronRight, EyeOff, Edit, Trash2 } from 'lucide-react';
 import { dataUtils } from '../services/api';
 import TaskModal from './TaskModal';
 import './TaskLists.css';
@@ -94,11 +94,6 @@ const TaskLists = ({
 
   return (
     <div className="task-lists">
-      <div className="task-lists-header">
-        <h2>Project Tasks</h2>
-        <p className="text-secondary">Manage your project tasks and track progress</p>
-      </div>
-
       <div className="project-cards-grid">
         {visibleProjects.map(project => (
           <ProjectTaskCard
