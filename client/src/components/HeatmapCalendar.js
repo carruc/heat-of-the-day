@@ -343,24 +343,8 @@ const ProjectRow = ({
           className="project-header"
           style={{ borderLeftColor: project.color }}
         >
+          {/* Collapse/expand toggle on the left */}
           <div className="project-controls">
-            {/* Move buttons - Implements D8 */}
-            <button 
-              className="btn-ghost btn-sm"
-              onClick={onMoveUp}
-              title="Move up"
-            >
-              <ChevronUp size={12} />
-            </button>
-            <button 
-              className="btn-ghost btn-sm"
-              onClick={onMoveDown}
-              title="Move down"
-            >
-              <ChevronDown size={12} />
-            </button>
-
-            {/* Collapse/expand toggle - Implements D3 */}
             <button
               className="btn-ghost btn-sm"
               onClick={onToggleCollapsed}
@@ -370,15 +354,39 @@ const ProjectRow = ({
             </button>
           </div>
 
+          {/* Project info in the center */}
           <div className="project-info">
-            <span className="project-name">{project.name}</span>
-            {!project.collapsed && events.length > 0 && (
-              <span className="project-events-count text-muted">
-                {events.length} event{events.length !== 1 ? 's' : ''}
-              </span>
+            <div className="project-main-info">
+              <span className="project-name" title={project.name}>{project.name}</span>
+              {!project.collapsed && events.length > 0 && (
+                <span className="project-events-count text-muted">
+                  {events.length} event{events.length !== 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
+            
+            {/* Move buttons - only visible when expanded */}
+            {!project.collapsed && (
+              <div className="project-move-controls">
+                <button 
+                  className="btn-ghost btn-sm"
+                  onClick={onMoveUp}
+                  title="Move up"
+                >
+                  <ChevronUp size={12} />
+                </button>
+                <button 
+                  className="btn-ghost btn-sm"
+                  onClick={onMoveDown}
+                  title="Move down"
+                >
+                  <ChevronDown size={12} />
+                </button>
+              </div>
             )}
           </div>
 
+          {/* Three dots menu on the right */}
           <div className="project-actions">
             <button
               className="btn-ghost btn-sm"

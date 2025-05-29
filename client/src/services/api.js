@@ -252,11 +252,11 @@ export const dataUtils = {
   // Generate date range for heatmap
   generateDateRange(centerDate, timeScale, daysToShow = 30) {
     const dates = [];
-    const today = new Date();
+    const center = new Date(centerDate);
     
-    // Start from 7 days ago
-    const startDate = new Date(today);
-    startDate.setDate(today.getDate() - 7);
+    // Start from 7 days before the center date
+    const startDate = new Date(center);
+    startDate.setDate(center.getDate() - 7);
     
     for (let i = 0; i < daysToShow; i += timeScale) {
       const date = new Date(startDate);
