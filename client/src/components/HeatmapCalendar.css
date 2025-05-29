@@ -1,0 +1,538 @@
+/* Heatmap Calendar Styles */
+.heatmap-calendar {
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* Header styles */
+.heatmap-header {
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--surface-hover);
+}
+
+.heatmap-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.timescale-control {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.timescale-control input {
+  width: 80px;
+}
+
+/* Grid layout */
+.heatmap-grid {
+  overflow-x: auto;
+  padding: var(--spacing-md);
+}
+
+.month-headers,
+.date-headers,
+.project-row,
+.project-events-row {
+  display: grid;
+  grid-template-columns: 200px repeat(auto-fit, minmax(32px, 1fr));
+  gap: 1px;
+  margin-bottom: 1px;
+}
+
+.project-column-header {
+  background-color: var(--surface-hover);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-weight: 600;
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+}
+
+/* Month headers */
+.month-header {
+  background-color: var(--surface-hover);
+  padding: var(--spacing-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+}
+
+/* Date headers */
+.date-header {
+  background-color: var(--surface-hover);
+  padding: var(--spacing-xs);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 32px;
+}
+
+.date-day {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.date-weekday {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Project row styles */
+.project-row {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.project-header {
+  background-color: var(--surface);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-right: 1px solid var(--border);
+  border-left: 4px solid var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  min-height: 48px;
+  position: relative;
+}
+
+.project-controls {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: center;
+}
+
+.project-controls button {
+  padding: var(--spacing-xs);
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.project-header:hover .project-controls button {
+  opacity: 1;
+}
+
+.project-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.project-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.project-events-count {
+  font-size: 0.75rem;
+}
+
+.project-actions {
+  position: relative;
+}
+
+.project-actions-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  min-width: 120px;
+  animation: slideDown 0.2s ease-out;
+}
+
+.project-actions-menu button {
+  width: 100%;
+  padding: var(--spacing-sm);
+  text-align: left;
+  border: none;
+  background: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.75rem;
+  transition: background-color 0.2s;
+}
+
+.project-actions-menu button:hover {
+  background-color: var(--surface-hover);
+}
+
+.project-actions-menu button.text-error {
+  color: var(--error-color);
+}
+
+/* Heatmap cells */
+.heatmap-cell {
+  min-height: 48px;
+  min-width: 32px;
+  border: 1px solid var(--border-light);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  padding: 2px;
+  gap: 1px;
+}
+
+.heatmap-cell:hover {
+  border-color: var(--text-secondary);
+  transform: scale(1.05);
+  z-index: 10;
+  box-shadow: var(--shadow-md);
+}
+
+/* Event indicators in cells */
+.heatmap-cell.has-milestone {
+  border: 2px solid var(--text-muted);
+}
+
+.heatmap-cell.has-deadline {
+  border: 2px solid var(--error-color);
+}
+
+.event-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--text-secondary);
+  color: white;
+  font-size: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.event-indicator.milestone {
+  background-color: var(--text-muted);
+}
+
+.event-indicator.deadline {
+  background-color: var(--error-color);
+}
+
+/* Project events row (expanded view) */
+.project-events-row {
+  background-color: var(--surface-hover);
+  border-bottom: 1px solid var(--border);
+}
+
+.project-events-header {
+  background-color: var(--surface-hover);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+}
+
+.event-names-cell {
+  min-height: 32px;
+  min-width: 32px;
+  padding: var(--spacing-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-right: 1px solid var(--border-light);
+}
+
+.event-name {
+  font-size: 0.625rem;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.event-name:hover {
+  background-color: var(--surface);
+}
+
+.event-name.milestone {
+  background-color: rgba(156, 163, 175, 0.2);
+  color: var(--text-muted);
+}
+
+.event-name.deadline {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: var(--error-color);
+}
+
+/* Hidden projects bar */
+.hidden-projects-bar {
+  padding: var(--spacing-md);
+  background-color: var(--surface-hover);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Context menu */
+.context-menu {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  min-width: 200px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.context-menu-header {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--surface-hover);
+}
+
+.context-menu-section {
+  padding: var(--spacing-sm);
+}
+
+.context-menu-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-xs);
+  text-transform: uppercase;
+}
+
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-xs);
+  font-size: 0.875rem;
+}
+
+.context-menu-item:hover {
+  background-color: var(--surface-hover);
+}
+
+.event-type-badge {
+  font-size: 0.625rem;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.event-type-badge.milestone {
+  background-color: var(--text-muted);
+  color: white;
+}
+
+.event-type-badge.deadline {
+  background-color: var(--error-color);
+  color: white;
+}
+
+.event-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-left: auto;
+}
+
+/* Tooltip */
+.cell-tooltip {
+  position: fixed;
+  background-color: var(--text-primary);
+  color: white;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  z-index: 1000;
+  max-width: 200px;
+  pointer-events: none;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.tooltip-header {
+  margin-bottom: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tooltip-content > div {
+  margin-bottom: var(--spacing-xs);
+}
+
+.tooltip-content > div:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .month-headers,
+  .date-headers,
+  .project-row,
+  .project-events-row {
+    grid-template-columns: 160px repeat(auto-fit, minmax(28px, 1fr));
+  }
+  
+  .project-column-header {
+    font-size: 0.875rem;
+  }
+  
+  .heatmap-cell {
+    min-height: 40px;
+    min-width: 28px;
+  }
+  
+  .date-header {
+    min-height: 40px;
+    min-width: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .heatmap-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    align-items: stretch;
+  }
+  
+  .heatmap-controls {
+    justify-content: center;
+  }
+  
+  .timescale-control {
+    justify-content: center;
+  }
+  
+  .month-headers,
+  .date-headers,
+  .project-row,
+  .project-events-row {
+    grid-template-columns: 120px repeat(auto-fit, minmax(24px, 1fr));
+  }
+  
+  .project-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    min-height: auto;
+    padding: var(--spacing-sm);
+  }
+  
+  .project-controls {
+    order: 1;
+  }
+  
+  .project-info {
+    order: 0;
+  }
+  
+  .project-actions {
+    order: 2;
+    align-self: flex-end;
+  }
+  
+  .heatmap-cell {
+    min-height: 32px;
+    min-width: 24px;
+  }
+  
+  .date-header {
+    min-height: 32px;
+    min-width: 24px;
+    font-size: 0.75rem;
+  }
+  
+  .date-day {
+    font-size: 0.75rem;
+  }
+  
+  .date-weekday {
+    font-size: 0.625rem;
+  }
+  
+  .project-name {
+    font-size: 0.75rem;
+  }
+  
+  .event-indicator {
+    width: 8px;
+    height: 8px;
+    font-size: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heatmap-grid {
+    padding: var(--spacing-sm);
+  }
+  
+  .project-column-header {
+    padding: var(--spacing-sm);
+  }
+  
+  .context-menu {
+    min-width: 150px;
+    font-size: 0.75rem;
+  }
+  
+  .context-menu-header {
+    padding: var(--spacing-sm);
+  }
+  
+  .hidden-projects-bar {
+    padding: var(--spacing-sm);
+    font-size: 0.75rem;
+  }
+}
+
+/* Animation for smooth interactions */
+.heatmap-cell,
+.project-header,
+.event-name {
+  transition: all 0.2s ease-in-out;
+}
+
+.project-row:hover .project-header {
+  background-color: var(--surface-hover);
+}
+
+/* Focus styles for accessibility */
+.heatmap-cell:focus,
+.project-header button:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Current day highlighting */
+.date-header.current-day {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.date-header.current-day .date-weekday {
+  color: rgba(255, 255, 255, 0.8);
+} 
