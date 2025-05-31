@@ -209,11 +209,20 @@ const HeatmapCalendar = ({
       
       // If it's the first of month, or first in range and we haven't added this month yet
       if (isFirstOfMonth || (isFirstInRange && !headers.some(h => h.month === date.toLocaleDateString('en-US', { month: 'short' })))) {
-        headers.push({
-          month: date.toLocaleDateString('en-US', { month: 'short' }),
-          position: index + 1, // +1 to account for project column
-          year: date.getFullYear()
-        });
+        // Count how many days of this month are visible in our date range
+        const monthYear = `${date.getFullYear()}-${date.getMonth()}`;
+        const daysInThisMonth = dateRange.filter(d => 
+          `${d.getFullYear()}-${d.getMonth()}` === monthYear
+        ).length;
+        
+        // Only show month header if we have more than 3 days of this month visible
+        if (daysInThisMonth > 3) {
+          headers.push({
+            month: date.toLocaleDateString('en-US', { month: 'short' }),
+            position: index + 1, // +1 to account for project column
+            year: date.getFullYear()
+          });
+        }
       }
     });
     
