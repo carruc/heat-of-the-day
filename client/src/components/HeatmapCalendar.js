@@ -23,7 +23,16 @@ const HeatmapCalendar = ({
   const [daysToShow, setDaysToShow] = useState(51); // Simple fixed value for now
   const [hoveredCell, setHoveredCell] = useState(null);
   const [contextMenu, setContextMenu] = useState(null);
+  const [isCustomTimeScale, setIsCustomTimeScale] = useState(false);
   const calendarRef = useRef(null);
+
+  // Automatically set custom mode if timeScale doesn't match presets
+  useEffect(() => {
+    const presetValues = [1, 3, 7];
+    if (!presetValues.includes(timeScale)) {
+      setIsCustomTimeScale(true);
+    }
+  }, [timeScale]);
 
   // Calculate how many days can fit in the visible area
   // Th Iis determines the number of columns that will be visible without horizontal scrolling
@@ -46,7 +55,7 @@ const HeatmapCalendar = ({
     const maxColumns = availableSpace / minColumnWidth;
     
     // 5. Take the rounded ceiling of that number
-    const result = Math.ceil(maxColumns);
+    const result = Math.floor(maxColumns);
     
     // 6. Return that number
     return Math.max(result, 20); // Ensure minimum of 20 columns
@@ -258,40 +267,74 @@ const HeatmapCalendar = ({
       }
     });
     
-    // Filter headers to ensure at least 3 cells apart, prioritizing more recent months
-    const filteredHeaders = [];
-    
-    // Sort by position (chronological order)
-    const sortedHeaders = potentialHeaders.sort((a, b) => a.position - b.position);
-    
-    for (let i = 0; i < sortedHeaders.length; i++) {
-      const currentHeader = sortedHeaders[i];
-      let shouldInclude = true;
+    // Different filtering logic based on timeScale
+    if (timeScale > 10) {
+      // For large timescales, show most recent month and then every 3-4 cells
+      const filteredHeaders = [];
       
-      // Check if this header is too close to any already included header
-      for (const includedHeader of filteredHeaders) {
-        const distance = Math.abs(currentHeader.position - includedHeader.position);
+      // Sort by date (most recent first)
+      const sortedHeaders = potentialHeaders.sort((a, b) => b.date - a.date);
+      
+      if (sortedHeaders.length > 0) {
+        // Always include the most recent month
+        const mostRecent = sortedHeaders[0];
+        filteredHeaders.push(mostRecent);
         
-        if (distance < 3) {
-          // Too close - prioritize the more recent one
-          if (currentHeader.date > includedHeader.date) {
-            // Remove the older header and include the current one
-            const indexToRemove = filteredHeaders.findIndex(h => h.monthYear === includedHeader.monthYear);
-            filteredHeaders.splice(indexToRemove, 1);
-          } else {
-            // Keep the existing newer header, skip current one
-            shouldInclude = false;
-            break;
+        // Then add months that are approximately 3-4 cells away
+        const targetSpacing = 3.5; // Average of 3 and 4
+        let lastIncludedPosition = mostRecent.position;
+        
+        // Sort remaining headers by position for consistent spacing
+        const remainingHeaders = sortedHeaders.slice(1).sort((a, b) => a.position - b.position);
+        
+        for (const header of remainingHeaders) {
+          const distance = Math.abs(header.position - lastIncludedPosition);
+          
+          // Include if it's far enough from the last included header
+          if (distance >= Math.floor(targetSpacing)) {
+            filteredHeaders.push(header);
+            lastIncludedPosition = header.position;
           }
         }
       }
       
-      if (shouldInclude) {
-        filteredHeaders.push(currentHeader);
+      return filteredHeaders.sort((a, b) => a.position - b.position);
+    } else {
+      // Original logic for smaller timescales
+      const filteredHeaders = [];
+      
+      // Sort by position (chronological order)
+      const sortedHeaders = potentialHeaders.sort((a, b) => a.position - b.position);
+      
+      for (let i = 0; i < sortedHeaders.length; i++) {
+        const currentHeader = sortedHeaders[i];
+        let shouldInclude = true;
+        
+        // Check if this header is too close to any already included header
+        for (const includedHeader of filteredHeaders) {
+          const distance = Math.abs(currentHeader.position - includedHeader.position);
+          
+          if (distance < 3) {
+            // Too close - prioritize the more recent one
+            if (currentHeader.date > includedHeader.date) {
+              // Remove the older header and include the current one
+              const indexToRemove = filteredHeaders.findIndex(h => h.monthYear === includedHeader.monthYear);
+              filteredHeaders.splice(indexToRemove, 1);
+            } else {
+              // Keep the existing newer header, skip current one
+              shouldInclude = false;
+              break;
+            }
+          }
+        }
+        
+        if (shouldInclude) {
+          filteredHeaders.push(currentHeader);
+        }
       }
+      
+      return filteredHeaders;
     }
-    
-    return filteredHeaders;
   };
 
   const monthHeaders = getMonthHeaders();
@@ -327,18 +370,52 @@ const HeatmapCalendar = ({
         </div>
 
         <div className="timescale-control">
-          <label className="form-label">
-            Time scale (days per cell):
-            <input
-              type="number"
-              min="1"
-              max="7"
-              value={timeScale}
-              onChange={(e) => onTimeScaleChange(parseInt(e.target.value) || 1)}
-              className="input"
-              style={{ width: '80px', marginLeft: '8px' }}
-            />
-          </label>
+          <label className="form-label">Days per Cell:</label>
+          <div className="timescale-buttons">
+            <button
+              className={`timescale-btn ${timeScale === 1 && !isCustomTimeScale ? 'active' : ''}`}
+              onClick={() => {
+                setIsCustomTimeScale(false);
+                onTimeScaleChange(1);
+              }}
+            >
+              1 day
+            </button>
+            <button
+              className={`timescale-btn ${timeScale === 3 && !isCustomTimeScale ? 'active' : ''}`}
+              onClick={() => {
+                setIsCustomTimeScale(false);
+                onTimeScaleChange(3);
+              }}
+            >
+              3 day
+            </button>
+            <button
+              className={`timescale-btn ${timeScale === 7 && !isCustomTimeScale ? 'active' : ''}`}
+              onClick={() => {
+                setIsCustomTimeScale(false);
+                onTimeScaleChange(7);
+              }}
+            >
+              week
+            </button>
+            <button
+              className={`timescale-btn ${isCustomTimeScale ? 'active' : ''}`}
+              onClick={() => setIsCustomTimeScale(true)}
+            >
+              Custom
+            </button>
+            {isCustomTimeScale && (
+              <input
+                type="number"
+                min="1"
+                max="30"
+                value={timeScale}
+                onChange={(e) => onTimeScaleChange(parseInt(e.target.value) || 1)}
+                className="input custom-timescale-input"
+              />
+            )}
+          </div>
         </div>
       </div>
 

@@ -7,7 +7,7 @@
 
 /* Header styles */
 .heatmap-header {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-xs);
   border-bottom: none;
   display: flex;
   justify-content: space-between;
@@ -36,16 +36,55 @@
 .timescale-control {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-sm);
 }
 
 .timescale-control .form-label {
   font-size: 0.875rem;
   margin: 0;
   white-space: nowrap;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.timescale-buttons {
   display: flex;
+  gap: var(--spacing-xs);
   align-items: center;
-  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.timescale-btn {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.875rem;
+  height: 32px;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  color: var(--text-secondary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.timescale-btn:hover {
+  background-color: var(--surface-hover);
+  border-color: var(--primary-color);
+}
+
+.timescale-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.custom-timescale-input {
+  width: 60px;
+  padding: var(--spacing-xs);
+  font-size: 0.875rem;
+  height: 32px;
+  margin-left: var(--spacing-xs);
 }
 
 .timescale-control input {
@@ -58,7 +97,7 @@
 /* Grid layout */
 .heatmap-grid {
   overflow-x: auto;
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
 }
 
 .month-headers,
@@ -83,7 +122,7 @@
   position: relative;
 }
 
-/* Vertical line under "Project" text */
+/* Horizontal line under "Project" text */
 .project-column-header:not(:empty)::after {
   content: '';
   position: absolute;
@@ -102,6 +141,11 @@
 }
 
 /* Month headers */
+.month-headers .project-column-header {
+  min-height: 20px;
+  padding: var(--spacing-xs) var(--spacing-md);
+}
+
 .month-header {
   background-color: transparent;
   padding: var(--spacing-xs) var(--spacing-sm);
@@ -111,7 +155,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  min-height: 24px;
+  min-height: 20px;
   text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
   position: relative;
 }
@@ -142,7 +186,7 @@
   content: '';
   position: absolute;
   left: 0;
-  top: 28px;
+  top: 4px;
   width: 1px;
   height: 60px; /* Much shorter - just covers typical calendar rows */
   background: linear-gradient(to bottom, 
