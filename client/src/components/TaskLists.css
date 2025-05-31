@@ -603,4 +603,303 @@
   100% {
     transform: translateX(100%);
   }
+}
+
+/* Inline Task Creator Styles */
+.inline-task-creator {
+  padding: var(--spacing-sm);
+  border: 2px solid var(--primary-color);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  margin-top: var(--spacing-xs);
+  animation: fadeInUp 0.2s ease-out;
+}
+
+.task-creator-main {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.task-checkbox-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px; /* Align with input text */
+}
+
+.task-creator-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.task-creator-input {
+  width: 100%;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.task-creator-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-color-alpha);
+}
+
+.task-creator-input::placeholder {
+  color: var(--text-placeholder);
+}
+
+.task-creator-events {
+  margin-top: var(--spacing-xs);
+}
+
+.events-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  max-height: 200px;
+  overflow-y: auto;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+}
+
+.event-option {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.event-option:hover {
+  background-color: var(--surface-hover);
+  border-color: var(--border);
+}
+
+.event-option.selected {
+  background-color: var(--primary-color-alpha);
+  border-color: var(--primary-color);
+}
+
+.event-radio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.event-option.selected .event-radio {
+  border-color: var(--primary-color);
+}
+
+.radio-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+}
+
+.radio-indicator.active {
+  background-color: var(--primary-color);
+}
+
+.event-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.event-option .event-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.event-type-badge {
+  display: inline-block;
+  font-size: 0.625rem;
+  padding: 1px 4px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  max-width: fit-content;
+  line-height: 1;
+}
+
+.event-type-badge.milestone {
+  background-color: rgba(156, 163, 175, 0.2);
+  color: var(--text-muted);
+}
+
+.event-type-badge.deadline {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: var(--error-color);
+}
+
+.event-date {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.task-creator-event-select {
+  width: 100%;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.task-creator-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: flex-start;
+  margin-top: 2px; /* Align with input */
+}
+
+.task-creator-ok {
+  background-color: var(--accent-color, var(--primary-color));
+  color: white;
+  border: none;
+  padding: var(--spacing-xs);
+  min-width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-creator-ok:hover:not(:disabled) {
+  background-color: var(--accent-color-hover, var(--primary-color-hover));
+  transform: translateY(-1px);
+}
+
+.task-creator-ok:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.task-creator-actions .btn-ghost {
+  padding: var(--spacing-xs);
+  min-width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ensure proper spacing when inline creator is present */
+.task-section .task-list + .task-list {
+  margin-top: 0;
+}
+
+/* Mobile responsiveness for inline creator */
+@media (max-width: 480px) {
+  .task-creator-main {
+    gap: var(--spacing-xs);
+  }
+  
+  .task-creator-input {
+    font-size: 0.8rem;
+    padding: var(--spacing-xs);
+  }
+  
+  .events-list {
+    max-height: 150px;
+    padding: var(--spacing-xs);
+  }
+  
+  .event-option {
+    padding: var(--spacing-xs);
+  }
+  
+  .event-radio {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .radio-indicator {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .event-option .event-name {
+    font-size: 0.75rem;
+  }
+  
+  .event-type-badge {
+    font-size: 0.55rem;
+    padding: 1px 3px;
+  }
+  
+  .event-date {
+    font-size: 0.65rem;
+  }
+  
+  .events-label {
+    font-size: 0.7rem;
+  }
+  
+  .task-creator-event-select {
+    font-size: 0.7rem;
+    padding: var(--spacing-xs);
+  }
+  
+  .task-creator-actions {
+    gap: var(--spacing-xs);
+  }
+  
+  .task-creator-ok,
+  .task-creator-actions .btn-ghost {
+    min-width: 24px;
+    height: 24px;
+    padding: 4px;
+  }
 } 

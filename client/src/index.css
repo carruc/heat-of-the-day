@@ -17,12 +17,16 @@
   /* Semantic color mappings for light mode */
   --primary-color: var(--secondary);
   --primary-hover: #5a1ee6;
+  --primary-color-alpha: rgba(108, 41, 255, 0.2);
+  --accent-color: #10b981;
+  --accent-color-hover: #059669;
   --success-color: var(--tertiary);
   --warning-color: #f59e0b;
   --error-color: var(--text-highlight);
   --text-primary: var(--dark);
   --text-secondary: var(--darkgray);
   --text-muted: var(--gray);
+  --text-placeholder: var(--gray);
   --background: var(--light);
   --surface: #ffffff;
   --surface-hover: var(--lightgray);
@@ -63,12 +67,16 @@
   /* Semantic color mappings for dark mode */
   --primary-color: var(--secondary);
   --primary-hover: #96b84d;
+  --primary-color-alpha: rgba(167, 201, 87, 0.2);
+  --accent-color: #10b981;
+  --accent-color-hover: #059669;
   --success-color: var(--tertiary);
   --warning-color: #fbbf24;
   --error-color: #f87171;
   --text-primary: var(--dark);
   --text-secondary: var(--darkgray);
   --text-muted: var(--gray);
+  --text-placeholder: var(--gray);
   --background: var(--light);
   --surface: var(--lightgray);
   --surface-hover: #4a474a;
@@ -172,6 +180,17 @@ h4 { font-size: 1.125rem; }
 .btn-ghost:hover:not(:disabled) {
   background-color: var(--surface-hover);
   color: var(--text-primary);
+}
+
+.btn-accent {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: white;
+}
+
+.btn-accent:hover:not(:disabled) {
+  background-color: var(--accent-color-hover);
+  border-color: var(--accent-color-hover);
 }
 
 .btn-sm {

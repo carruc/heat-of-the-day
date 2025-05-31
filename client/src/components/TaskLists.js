@@ -22,6 +22,7 @@ const TaskLists = ({
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [editingTask, setEditingTask] = useState(null);
+  const [creatingTaskForProject, setCreatingTaskForProject] = useState(null);
 
   // Sort projects and filter visible ones
   const visibleProjects = useMemo(() => {
@@ -58,26 +59,38 @@ const TaskLists = ({
     });
   };
 
-  // Handle task creation - Implements D9, D11
+  // Handle task creation - Implements D9, D11 (now inline)
   const handleCreateTask = (projectId) => {
-    setSelectedProject(projects.find(p => p.id === projectId));
-    setShowTaskModal(true);
+    setCreatingTaskForProject(projectId);
   };
 
-  // Handle task editing
+  // Handle task editing (still uses modal)
   const handleEditTask = (task) => {
     setEditingTask(task);
     setSelectedProject(projects.find(p => p.id === task.projectId));
     setShowTaskModal(true);
   };
 
-  // Handle task modal save
+  // Handle inline task creation save
+  const handleInlineTaskSave = async (taskData) => {
+    try {
+      await onTaskCreate(taskData);
+      setCreatingTaskForProject(null);
+    } catch (error) {
+      console.error('Error creating task:', error);
+    }
+  };
+
+  // Handle inline task creation cancel
+  const handleInlineTaskCancel = () => {
+    setCreatingTaskForProject(null);
+  };
+
+  // Handle task modal save (for editing)
   const handleTaskModalSave = async (taskData) => {
     try {
       if (editingTask) {
         await onTaskUpdate(editingTask.id, taskData);
-      } else {
-        await onTaskCreate(taskData);
       }
       setShowTaskModal(false);
       setSelectedProject(null);
@@ -105,6 +118,7 @@ const TaskLists = ({
               tasks={dataUtils.getProjectTasks(tasks, project.id)}
               events={dataUtils.getProjectEvents(events, project.id)}
               isExpanded={expandedProjects.has(project.id)}
+              isCreatingTask={creatingTaskForProject === project.id}
               onToggleExpanded={() => handleToggleExpanded(project.id)}
               onToggleHidden={() => handleToggleHidden(project.id)}
               onCreateTask={() => handleCreateTask(project.id)}
@@ -113,6 +127,8 @@ const TaskLists = ({
               onTaskDelete={onTaskDelete}
               onProjectEdit={() => onProjectEdit(project)}
               onProjectDelete={() => onProjectDelete(project.id)}
+              onInlineTaskSave={handleInlineTaskSave}
+              onInlineTaskCancel={handleInlineTaskCancel}
             />
           ))}
         </div>
@@ -140,8 +156,8 @@ const TaskLists = ({
         )}
       </div>
 
-      {/* Task creation/editing modal */}
-      {showTaskModal && selectedProject && (
+      {/* Task editing modal (only for editing existing tasks) */}
+      {showTaskModal && selectedProject && editingTask && (
         <TaskModal
           task={editingTask}
           project={selectedProject}
@@ -160,6 +176,7 @@ const ProjectTaskCard = ({
   tasks,
   events,
   isExpanded,
+  isCreatingTask,
   onToggleExpanded,
   onToggleHidden,
   onCreateTask,
@@ -167,7 +184,9 @@ const ProjectTaskCard = ({
   onTaskToggle,
   onTaskDelete,
   onProjectEdit,
-  onProjectDelete
+  onProjectDelete,
+  onInlineTaskSave,
+  onInlineTaskCancel
 }) => {
   // Separate completed and uncompleted tasks
   const uncompletedTasks = tasks.filter(t => !t.completed);
@@ -258,6 +277,18 @@ const ProjectTaskCard = ({
           ) : (
             <div className="empty-state">
               <p className="text-muted">No pending tasks</p>
+            </div>
+          )}
+
+          {/* Inline task creation form */}
+          {isCreatingTask && (
+            <div className="task-list">
+              <InlineTaskCreator
+                project={project}
+                events={events}
+                onSave={onInlineTaskSave}
+                onCancel={onInlineTaskCancel}
+              />
             </div>
           )}
         </div>
@@ -390,6 +421,124 @@ const TaskItem = ({ task, onToggle, onEdit, onDelete }) => {
               </button>
             </>
           )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Inline task creator component for creating tasks directly in the list
+const InlineTaskCreator = ({ project, events, onSave, onCancel }) => {
+  const [taskName, setTaskName] = useState('');
+  const [eventId, setEventId] = useState('');
+
+  const handleSubmit = () => {
+    if (taskName.trim()) {
+      const taskData = {
+        name: taskName.trim(),
+        projectId: project.id
+      };
+      
+      if (eventId) {
+        taskData.eventId = eventId;
+      }
+      
+      onSave(taskData);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSubmit();
+    } else if (e.key === 'Escape') {
+      onCancel();
+    }
+  };
+
+  const handleCancel = () => {
+    onCancel();
+  };
+
+  const handleEventSelect = (selectedEventId) => {
+    setEventId(selectedEventId === eventId ? '' : selectedEventId);
+  };
+
+  // Sort events by date for better UX
+  const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  return (
+    <div className="inline-task-creator">
+      <div className="task-creator-main">
+        <div className="task-checkbox-placeholder">
+          <div className="checkbox-empty" />
+        </div>
+        
+        <div className="task-creator-content">
+          <input
+            type="text"
+            className="task-creator-input"
+            placeholder="Enter task description..."
+            value={taskName}
+            onChange={(e) => setTaskName(e.target.value)}
+            onKeyDown={handleKeyPress}
+            autoFocus
+          />
+          
+          {sortedEvents.length > 0 && (
+            <div className="task-creator-events">
+              <div className="events-list">
+                <div 
+                  className={`event-option ${eventId === '' ? 'selected' : ''}`}
+                  onClick={() => setEventId('')}
+                >
+                  <div className="event-radio">
+                    <div className={`radio-indicator ${eventId === '' ? 'active' : ''}`} />
+                  </div>
+                  <span className="event-name">No specific event</span>
+                </div>
+                
+                {sortedEvents.map(event => (
+                  <div 
+                    key={event.id}
+                    className={`event-option ${eventId === event.id ? 'selected' : ''}`}
+                    onClick={() => handleEventSelect(event.id)}
+                  >
+                    <div className="event-radio">
+                      <div className={`radio-indicator ${eventId === event.id ? 'active' : ''}`} />
+                    </div>
+                    <div className="event-info">
+                      <span className="event-name">{event.name}</span>
+                      <span className={`event-type-badge ${event.type}`}>
+                        {event.type}
+                      </span>
+                      <span className="event-date">
+                        {new Date(event.date).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="task-creator-actions">
+          <button
+            className="btn btn-accent btn-sm task-creator-ok"
+            onClick={handleSubmit}
+            disabled={!taskName.trim()}
+            title="Save task (Enter)"
+          >
+            <Check size={14} />
+          </button>
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={handleCancel}
+            title="Cancel (Escape)"
+          >
+            <X size={14} />
+          </button>
         </div>
       </div>
     </div>
