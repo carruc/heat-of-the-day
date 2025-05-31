@@ -1,18 +1,33 @@
+/* Import Inter font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 /* Global styles and CSS custom properties */
 :root {
-  --primary-color: #3b82f6;
-  --primary-hover: #2563eb;
-  --success-color: #10b981;
+  /* Light Mode Colors (default) */
+  --light: #f2f2f2;
+  --lightgray: #e0e0e0;
+  --gray: #b8b8b8;
+  --darkgray: #4e4e4e;
+  --dark: #2b2b2b;
+  --secondary: #6c29ff;
+  --tertiary: #84a59d;
+  --highlight: rgba(108, 41, 255, 0.15);
+  --text-highlight: #f23688;
+
+  /* Semantic color mappings for light mode */
+  --primary-color: var(--secondary);
+  --primary-hover: #5a1ee6;
+  --success-color: var(--tertiary);
   --warning-color: #f59e0b;
-  --error-color: #ef4444;
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
-  --background: #f8fafc;
+  --error-color: var(--text-highlight);
+  --text-primary: var(--dark);
+  --text-secondary: var(--darkgray);
+  --text-muted: var(--gray);
+  --background: var(--light);
   --surface: #ffffff;
-  --surface-hover: #f1f5f9;
-  --border: #e2e8f0;
-  --border-light: #f1f5f9;
+  --surface-hover: var(--lightgray);
+  --border: var(--gray);
+  --border-light: var(--lightgray);
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -23,6 +38,47 @@
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
+
+  /* Past date specific colors */
+  --past-date-bg: var(--surface-hover);
+  --past-date-text: var(--text-muted);
+  --past-date-opacity: 0.6;
+}
+
+/* Dark Mode Colors */
+[data-theme="dark"] {
+  --light: #161618;
+  --lightgray: #393639;
+  --gray: #646464;
+  --darkgray: #d4d4d4;
+  --dark: #ebebec;
+  --secondary: #a7c957;
+  --tertiary: #84a59d;
+  --highlight: rgba(143, 159, 169, 0.15);
+  --text-highlight: #b3aa0288;
+
+  /* Semantic color mappings for dark mode */
+  --primary-color: var(--secondary);
+  --primary-hover: #96b84d;
+  --success-color: var(--tertiary);
+  --warning-color: #fbbf24;
+  --error-color: #f87171;
+  --text-primary: var(--dark);
+  --text-secondary: var(--darkgray);
+  --text-muted: var(--gray);
+  --background: var(--light);
+  --surface: var(--lightgray);
+  --surface-hover: #4a474a;
+  --border: var(--gray);
+  --border-light: var(--lightgray);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  
+  /* Past date specific colors for dark mode */
+  --past-date-bg: #2a2829;
+  --past-date-text: var(--text-muted);
+  --past-date-opacity: 0.5;
 }
 
 * {
@@ -32,7 +88,7 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;

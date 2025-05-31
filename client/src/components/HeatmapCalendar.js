@@ -201,35 +201,21 @@ const HeatmapCalendar = ({
   // Get month headers - Implements D1.2
   const getMonthHeaders = () => {
     const headers = [];
-    let currentMonth = null;
-    let monthStart = 0;
     
     dateRange.forEach((date, index) => {
-      const month = date.getMonth();
-      const year = date.getFullYear();
-      const monthKey = `${year}-${month}`;
+      // Check if this is the first day of a month or the first day in our range
+      const isFirstOfMonth = date.getDate() === 1;
+      const isFirstInRange = index === 0;
       
-      if (currentMonth !== monthKey) {
-        if (currentMonth !== null) {
-          headers.push({
-            month: new Date(currentMonth.split('-')[0], currentMonth.split('-')[1]).toLocaleDateString('en-US', { month: 'short' }),
-            start: monthStart,
-            width: index - monthStart
-          });
-        }
-        currentMonth = monthKey;
-        monthStart = index;
+      // If it's the first of month, or first in range and we haven't added this month yet
+      if (isFirstOfMonth || (isFirstInRange && !headers.some(h => h.month === date.toLocaleDateString('en-US', { month: 'short' })))) {
+        headers.push({
+          month: date.toLocaleDateString('en-US', { month: 'short' }),
+          position: index + 1, // +1 to account for project column
+          year: date.getFullYear()
+        });
       }
     });
-    
-    // Add the last month
-    if (currentMonth !== null) {
-      headers.push({
-        month: new Date(currentMonth.split('-')[0], currentMonth.split('-')[1]).toLocaleDateString('en-US', { month: 'short' }),
-        start: monthStart,
-        width: dateRange.length - monthStart
-      });
-    }
     
     return headers;
   };
@@ -287,18 +273,14 @@ const HeatmapCalendar = ({
         {/* Month headers - Implements D1.2 */}
         <div className="month-headers" style={{ gridTemplateColumns }}>
           <div className="project-column-header"></div>
-          {monthHeaders.map((header, index) => (
-            <div
-              key={index}
-              className="month-header"
-              style={{
-                gridColumn: `span ${header.width}`,
-                textAlign: 'center'
-              }}
-            >
-              {header.month}
-            </div>
-          ))}
+          {dateRange.map((date, index) => {
+            const monthHeader = monthHeaders.find(h => h.position === index + 1);
+            return (
+              <div key={index} className="month-header">
+                {monthHeader ? monthHeader.month : ''}
+              </div>
+            );
+          })}
         </div>
 
         {/* Date headers */}
@@ -511,7 +493,6 @@ const ProjectRow = ({
             <div
               key={dateIndex}
               className={`heatmap-cell ${hasDeadline ? 'has-deadline' : ''} ${hasMilestone ? 'has-milestone' : ''} ${isPastDate ? 'past-date' : ''}`}
-              style={{ backgroundColor: cellData.color }}
               onContextMenu={(e) => onCellContextMenu(e, project, date)}
               onMouseEnter={() => onCellHover({
                 project,
@@ -521,6 +502,27 @@ const ProjectRow = ({
               onMouseLeave={() => onCellHover(null)}
               title={`${project.name} - ${dataUtils.formatDate(date)}: ${cellData.completedTasks} tasks completed`}
             >
+              {/* Rounded square indicator for heatmap intensity */}
+              <div 
+                className="heatmap-square"
+                style={{ 
+                  backgroundColor: cellData.intensity > 0 ? project.color : 'var(--border)',
+                  border: cellData.intensity === 0 ? `1px solid ${project.color}15` : 'none',
+                  opacity: (() => {
+                    let baseOpacity;
+                    if (cellData.intensity === 0) {
+                      baseOpacity = 0.4; // Subtle grey for 0 tasks
+                    } else {
+                      // Scale from 0.3 to 1.0 based on tasks (max at 10+ tasks)
+                      const normalizedIntensity = Math.min(cellData.completedTasks / 10, 1);
+                      baseOpacity = 0.3 + (normalizedIntensity * 0.7);
+                    }
+                    // Reduce opacity for past dates
+                    return isPastDate ? baseOpacity * 0.7 : baseOpacity;
+                  })()
+                }}
+              />
+              
               {/* Event indicators - Implements D3 */}
               {!project.collapsed && cellData.events.map(event => (
                 <div

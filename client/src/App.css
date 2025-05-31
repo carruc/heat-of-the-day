@@ -6,6 +6,24 @@
   background-color: var(--background);
 }
 
+/* App Header */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-xl);
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.app-title h1 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
 /* Error banner */
 .error-banner {
   background-color: var(--error-color);
@@ -51,11 +69,11 @@
 }
 
 .heatmap-section {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
 }
 
 /* Action buttons section positioned under heatmap */
@@ -106,9 +124,17 @@
 }
 
 @media (max-width: 768px) {
-  .app-main {
+  .app-header {
     padding: var(--spacing-md);
-    gap: var(--spacing-md);
+  }
+  
+  .app-title h1 {
+    font-size: 1.25rem;
+  }
+  
+  .app-main {
+    padding: var(--spacing-lg);
+    gap: var(--spacing-lg);
   }
   
   .action-buttons-section {
@@ -128,6 +154,14 @@
 }
 
 @media (max-width: 480px) {
+  .app-header {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .app-title h1 {
+    font-size: 1.125rem;
+  }
+  
   .app-main {
     padding: var(--spacing-md);
     gap: var(--spacing-md);

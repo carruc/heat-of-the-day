@@ -276,4 +276,32 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
 
-/* Custom calendar and clock icons are handled by the .input-icon class */ 
+/* Custom calendar and clock icons are handled by the .input-icon class */
+
+/* Date format hint */
+.format-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-left: 0.5rem;
+}
+
+/* Date display in DD/MM/YYYY format */
+.date-display {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  background: var(--surface);
+  padding: 2px 4px;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Adjust date input group for the display */
+.date-input-group {
+  position: relative;
+} 

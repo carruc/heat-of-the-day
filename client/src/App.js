@@ -3,6 +3,7 @@ import HeatmapCalendar from './components/HeatmapCalendar';
 import TaskLists from './components/TaskLists';
 import ProjectModal from './components/ProjectModal';
 import EventModal from './components/EventModal';
+import ThemeToggle from './components/ThemeToggle';
 import { apiService } from './services/api';
 import './App.css';
 
@@ -200,6 +201,14 @@ function App() {
 
   return (
     <div className="app">
+      {/* App Header with Theme Toggle */}
+      <header className="app-header">
+        <div className="app-title">
+          <h1>Heat of the Day</h1>
+        </div>
+        <ThemeToggle />
+      </header>
+
       {/* Error display */}
       {error && (
         <div className="error-banner">

@@ -25,11 +25,17 @@ const EventModal = ({ event, projects, onSave, onClose }) => {
         time: eventDate.toTimeString().slice(0, 5),
         type: event.type
       });
-    } else if (projects.length > 0) {
-      // Default to first project if creating new event
+    } else {
+      // Pre-fill with current year when creating new event
+      const currentYear = new Date().getFullYear();
+      const defaultDate = `${currentYear}-01-01`;
+      const defaultTime = '09:00';
+      
       setFormData(prev => ({
         ...prev,
-        projectId: projects[0].id
+        date: defaultDate,
+        time: defaultTime,
+        projectId: projects.length > 0 ? projects[0].id : ''
       }));
     }
   }, [event, projects]);
@@ -118,13 +124,27 @@ const EventModal = ({ event, projects, onSave, onClose }) => {
   // Get selected project for preview
   const selectedProject = projects.find(p => p.id === formData.projectId);
 
-  // Format date for display
+  // Format date for display in DD/MM/YYYY format
   const formatDateForDisplay = () => {
     if (formData.date && formData.time) {
       const eventDate = new Date(formData.date + 'T' + formData.time);
-      return dataUtils.formatDate(eventDate, 'datetime');
+      const day = eventDate.getDate().toString().padStart(2, '0');
+      const month = (eventDate.getMonth() + 1).toString().padStart(2, '0');
+      const year = eventDate.getFullYear();
+      const time = formData.time;
+      return `${day}/${month}/${year} at ${time}`;
     }
     return 'Select date and time';
+  };
+
+  // Helper function to format date in DD/MM/YYYY for input labels
+  const formatDateLabel = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
   return (
@@ -225,7 +245,10 @@ const EventModal = ({ event, projects, onSave, onClose }) => {
 
             {/* Date and time inputs */}
             <div className="form-group">
-              <label className="form-label">Date and Time *</label>
+              <label className="form-label">
+                Date and Time * 
+                <span className="format-hint">(DD/MM/YYYY format)</span>
+              </label>
               <div className="datetime-inputs">
                 <div className="date-input-group">
                   <Calendar size={16} className="input-icon" />
@@ -236,7 +259,11 @@ const EventModal = ({ event, projects, onSave, onClose }) => {
                     value={formData.date}
                     onChange={handleInputChange}
                     min={new Date().toISOString().split('T')[0]}
+                    title={formData.date ? `Selected: ${formatDateLabel(formData.date)}` : 'Select a date'}
                   />
+                  {formData.date && (
+                    <span className="date-display">{formatDateLabel(formData.date)}</span>
+                  )}
                 </div>
                 
                 <div className="time-input-group">
