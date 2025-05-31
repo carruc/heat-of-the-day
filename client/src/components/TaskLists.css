@@ -5,6 +5,12 @@
   padding: var(--spacing-lg);
 }
 
+.task-lists-container {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: flex-start;
+}
+
 .task-lists-header {
   margin-bottom: var(--spacing-xl);
   text-align: center;
@@ -20,7 +26,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
   gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
+  flex: 1;
 }
 
 /* Individual project task card */
@@ -267,16 +273,60 @@
   font-style: italic;
 }
 
-/* Hidden projects bar */
-.hidden-projects-bar {
-  padding: var(--spacing-md);
+/* Hidden projects vertical sidebar */
+.hidden-projects-sidebar {
+  max-width: 160px;
+  min-width: 160px;
   background-color: var(--surface-hover);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  padding: 0;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.sidebar-header {
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sidebar-content {
+  padding: var(--spacing-xs);
   display: flex;
-  gap: var(--spacing-sm);
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.hidden-project-item {
+  width: 100%;
+  padding: var(--spacing-sm);
+  background: none;
+  border: none;
+  border-left: 3px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+}
+
+.hidden-project-item:hover {
+  background-color: var(--surface);
+  border-left-width: 4px;
+}
+
+.project-name-truncated {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 /* Responsive design */
@@ -285,6 +335,11 @@
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: var(--spacing-md);
   }
+  
+  .hidden-projects-sidebar {
+    max-width: 140px;
+    min-width: 140px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -292,9 +347,49 @@
     padding: var(--spacing-md);
   }
   
+  .task-lists-container {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
   .project-cards-grid {
     grid-template-columns: 1fr;
     gap: var(--spacing-md);
+  }
+  
+  /* On mobile, show hidden projects as horizontal bar again */
+  .hidden-projects-sidebar {
+    max-width: none;
+    min-width: auto;
+    width: 100%;
+    flex-direction: row;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .sidebar-header {
+    border-bottom: none;
+    border-right: 1px solid var(--border);
+    padding-right: var(--spacing-sm);
+    margin-right: var(--spacing-sm);
+  }
+  
+  .sidebar-content {
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+  
+  .hidden-project-item {
+    width: auto;
+    flex: 0 0 auto;
+    margin-right: var(--spacing-xs);
+    border-left: none;
+    border-bottom: 3px solid var(--border);
+  }
+  
+  .hidden-project-item:hover {
+    border-left: none;
+    border-bottom-width: 4px;
   }
   
   .project-card-header {
@@ -354,9 +449,8 @@
     opacity: 1; /* Always show on mobile for easier access */
   }
   
-  .hidden-projects-bar {
-    padding: var(--spacing-sm);
-    font-size: 0.875rem;
+  .hidden-projects-sidebar {
+    font-size: 0.7rem;
   }
 }
 

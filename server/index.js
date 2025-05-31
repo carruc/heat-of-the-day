@@ -47,7 +47,7 @@ app.post('/api/projects', (req, res) => {
     id: uuidv4(),
     name,
     color,
-    collapsed: false,
+    collapsed: true,
     hidden: false,
     order: projects.length,
     createdAt: new Date().toISOString()

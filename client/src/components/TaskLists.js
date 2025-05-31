@@ -13,7 +13,9 @@ const TaskLists = ({
   onTaskUpdate,
   onTaskDelete,
   onTaskToggle,
-  onProjectUpdate
+  onProjectUpdate,
+  onProjectEdit,
+  onProjectDelete
 }) => {
   const [hiddenProjects, setHiddenProjects] = useState(new Set());
   const [expandedProjects, setExpandedProjects] = useState(new Set());
@@ -94,40 +96,49 @@ const TaskLists = ({
 
   return (
     <div className="task-lists">
-      <div className="project-cards-grid">
-        {visibleProjects.map(project => (
-          <ProjectTaskCard
-            key={project.id}
-            project={project}
-            tasks={dataUtils.getProjectTasks(tasks, project.id)}
-            events={dataUtils.getProjectEvents(events, project.id)}
-            isExpanded={expandedProjects.has(project.id)}
-            onToggleExpanded={() => handleToggleExpanded(project.id)}
-            onToggleHidden={() => handleToggleHidden(project.id)}
-            onCreateTask={() => handleCreateTask(project.id)}
-            onEditTask={handleEditTask}
-            onTaskToggle={onTaskToggle}
-            onTaskDelete={onTaskDelete}
-          />
-        ))}
-      </div>
-
-      {/* Hidden projects bar - Implements D12 */}
-      {hiddenProjectsList.length > 0 && (
-        <div className="hidden-projects-bar">
-          <span className="text-muted">Hidden project task lists:</span>
-          {hiddenProjectsList.map(project => (
-            <button
+      <div className="task-lists-container">
+        <div className="project-cards-grid">
+          {visibleProjects.map(project => (
+            <ProjectTaskCard
               key={project.id}
-              className="btn btn-ghost btn-sm"
-              onClick={() => handleToggleHidden(project.id)}
-              style={{ color: project.color }}
-            >
-              {project.name}
-            </button>
+              project={project}
+              tasks={dataUtils.getProjectTasks(tasks, project.id)}
+              events={dataUtils.getProjectEvents(events, project.id)}
+              isExpanded={expandedProjects.has(project.id)}
+              onToggleExpanded={() => handleToggleExpanded(project.id)}
+              onToggleHidden={() => handleToggleHidden(project.id)}
+              onCreateTask={() => handleCreateTask(project.id)}
+              onEditTask={handleEditTask}
+              onTaskToggle={onTaskToggle}
+              onTaskDelete={onTaskDelete}
+              onProjectEdit={() => onProjectEdit(project)}
+              onProjectDelete={() => onProjectDelete(project.id)}
+            />
           ))}
         </div>
-      )}
+
+        {/* Vertical hidden projects sidebar */}
+        {hiddenProjectsList.length > 0 && (
+          <div className="hidden-projects-sidebar">
+            <div className="sidebar-header">
+              <span className="text-muted">Hidden</span>
+            </div>
+            <div className="sidebar-content">
+              {hiddenProjectsList.map(project => (
+                <button
+                  key={project.id}
+                  className="hidden-project-item"
+                  onClick={() => handleToggleHidden(project.id)}
+                  style={{ borderLeftColor: project.color }}
+                  title={`Show ${project.name}`}
+                >
+                  <span className="project-name-truncated">{project.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Task creation/editing modal */}
       {showTaskModal && selectedProject && (
@@ -154,7 +165,9 @@ const ProjectTaskCard = ({
   onCreateTask,
   onEditTask,
   onTaskToggle,
-  onTaskDelete
+  onTaskDelete,
+  onProjectEdit,
+  onProjectDelete
 }) => {
   // Separate completed and uncompleted tasks
   const uncompletedTasks = tasks.filter(t => !t.completed);
@@ -191,6 +204,24 @@ const ProjectTaskCard = ({
           </div>
           
           <div className="project-card-actions">
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={onProjectEdit}
+              title="Edit project"
+            >
+              <Edit size={16} />
+            </button>
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => {
+                if (window.confirm('Are you sure you want to delete this project? All associated tasks and events will be removed.')) {
+                  onProjectDelete();
+                }
+              }}
+              title="Delete project"
+            >
+              <Trash2 size={16} />
+            </button>
             <button
               className="btn btn-ghost btn-sm"
               onClick={onToggleExpanded}

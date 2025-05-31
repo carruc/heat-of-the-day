@@ -254,6 +254,8 @@ function App() {
             onTaskDelete={handleDeleteTask}
             onTaskToggle={handleToggleTaskComplete}
             onProjectUpdate={handleUpdateProject}
+            onProjectEdit={handleEditProject}
+            onProjectDelete={handleDeleteProject}
           />
         </section>
       </main>

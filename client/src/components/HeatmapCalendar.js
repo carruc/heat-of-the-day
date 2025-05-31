@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, EyeOff, MoreVertical, Edit, Trash2 } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, EyeOff } from 'lucide-react';
 import { dataUtils } from '../services/api';
 import './HeatmapCalendar.css';
 
@@ -200,33 +200,98 @@ const HeatmapCalendar = ({
 
   // Get month headers - Implements D1.2
   const getMonthHeaders = () => {
-    const headers = [];
+    const potentialHeaders = [];
     
     dateRange.forEach((date, index) => {
-      // Check if this is the first day of a month or the first day in our range
-      const isFirstOfMonth = date.getDate() === 1;
-      const isFirstInRange = index === 0;
+      // For each cell, check if the 1st of any month falls within its timeScale period
+      const cellStartDate = new Date(date);
+      const cellEndDate = new Date(date);
+      cellEndDate.setDate(cellStartDate.getDate() + timeScale - 1);
       
-      // If it's the first of month, or first in range and we haven't added this month yet
-      if (isFirstOfMonth || (isFirstInRange && !headers.some(h => h.month === date.toLocaleDateString('en-US', { month: 'short' })))) {
-        // Count how many days of this month are visible in our date range
-        const monthYear = `${date.getFullYear()}-${date.getMonth()}`;
-        const daysInThisMonth = dateRange.filter(d => 
-          `${d.getFullYear()}-${d.getMonth()}` === monthYear
-        ).length;
+      // Check if the 1st of any month falls within this cell's date range
+      let monthStartInCell = null;
+      
+      // Check each day within the cell's timeScale period
+      for (let dayOffset = 0; dayOffset < timeScale; dayOffset++) {
+        const checkDate = new Date(cellStartDate);
+        checkDate.setDate(cellStartDate.getDate() + dayOffset);
         
-        // Only show month header if we have more than 3 days of this month visible
-        if (daysInThisMonth > 3) {
-          headers.push({
-            month: date.toLocaleDateString('en-US', { month: 'short' }),
+        if (checkDate.getDate() === 1) {
+          monthStartInCell = checkDate;
+          break;
+        }
+      }
+      
+      // If we found a month start within this cell, add to potential headers
+      if (monthStartInCell) {
+        const monthYear = `${monthStartInCell.getFullYear()}-${monthStartInCell.getMonth()}`;
+        
+        // Make sure we haven't already added this month
+        if (!potentialHeaders.some(h => h.monthYear === monthYear)) {
+          const monthName = monthStartInCell.toLocaleDateString('en-US', { month: 'short' });
+          
+          potentialHeaders.push({
+            month: monthName,
+            monthYear: monthYear,
             position: index + 1, // +1 to account for project column
-            year: date.getFullYear()
+            year: monthStartInCell.getFullYear(),
+            date: new Date(monthStartInCell),
+            isJanuary: monthName === 'Jan'
           });
         }
       }
+      
+      // Special case: if this is the first cell and no month header was added yet,
+      // add the current month to avoid empty headers
+      if (index === 0 && potentialHeaders.length === 0) {
+        const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+        const monthYear = `${date.getFullYear()}-${date.getMonth()}`;
+        
+        potentialHeaders.push({
+          month: monthName,
+          monthYear: monthYear,
+          position: index + 1,
+          year: date.getFullYear(),
+          date: new Date(date),
+          isJanuary: monthName === 'Jan'
+        });
+      }
     });
     
-    return headers;
+    // Filter headers to ensure at least 3 cells apart, prioritizing more recent months
+    const filteredHeaders = [];
+    
+    // Sort by position (chronological order)
+    const sortedHeaders = potentialHeaders.sort((a, b) => a.position - b.position);
+    
+    for (let i = 0; i < sortedHeaders.length; i++) {
+      const currentHeader = sortedHeaders[i];
+      let shouldInclude = true;
+      
+      // Check if this header is too close to any already included header
+      for (const includedHeader of filteredHeaders) {
+        const distance = Math.abs(currentHeader.position - includedHeader.position);
+        
+        if (distance < 3) {
+          // Too close - prioritize the more recent one
+          if (currentHeader.date > includedHeader.date) {
+            // Remove the older header and include the current one
+            const indexToRemove = filteredHeaders.findIndex(h => h.monthYear === includedHeader.monthYear);
+            filteredHeaders.splice(indexToRemove, 1);
+          } else {
+            // Keep the existing newer header, skip current one
+            shouldInclude = false;
+            break;
+          }
+        }
+      }
+      
+      if (shouldInclude) {
+        filteredHeaders.push(currentHeader);
+      }
+    }
+    
+    return filteredHeaders;
   };
 
   const monthHeaders = getMonthHeaders();
@@ -285,8 +350,15 @@ const HeatmapCalendar = ({
           {dateRange.map((date, index) => {
             const monthHeader = monthHeaders.find(h => h.position === index + 1);
             return (
-              <div key={index} className="month-header">
-                {monthHeader ? monthHeader.month : ''}
+              <div key={index} className={`month-header ${monthHeader?.isJanuary ? 'january-header' : ''}`}>
+                {monthHeader && (
+                  <>
+                    {monthHeader.isJanuary && (
+                      <div className="month-year">{monthHeader.year}</div>
+                    )}
+                    <div className="month-name">{monthHeader.month}</div>
+                  </>
+                )}
               </div>
             );
           })}
@@ -403,7 +475,6 @@ const ProjectRow = ({
   onCellHover,
   events
 }) => {
-  const [showActions, setShowActions] = useState(false);
 
   return (
     <>
@@ -412,12 +483,16 @@ const ProjectRow = ({
         <div 
           className="project-header"
           style={{ borderLeftColor: project.color }}
+          onClick={onToggleCollapsed}
         >
           {/* Collapse/expand toggle on the left */}
           <div className="project-controls">
             <button
               className="btn-ghost btn-sm"
-              onClick={onToggleCollapsed}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleCollapsed();
+              }}
               title={project.collapsed ? "Expand" : "Collapse"}
             >
               {project.collapsed ? '▶' : '▼'}
@@ -440,14 +515,20 @@ const ProjectRow = ({
               <div className="project-move-controls">
                 <button 
                   className="btn-ghost btn-sm"
-                  onClick={onMoveUp}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMoveUp();
+                  }}
                   title="Move up"
                 >
                   <ChevronUp size={12} />
                 </button>
                 <button 
                   className="btn-ghost btn-sm"
-                  onClick={onMoveDown}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMoveDown();
+                  }}
                   title="Move down"
                 >
                   <ChevronDown size={12} />
@@ -456,31 +537,18 @@ const ProjectRow = ({
             )}
           </div>
 
-          {/* Three dots menu on the right */}
+          {/* Hide project button */}
           <div className="project-actions">
             <button
               className="btn-ghost btn-sm"
-              onClick={() => setShowActions(!showActions)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleHidden();
+              }}
+              title="Hide project"
             >
-              <MoreVertical size={14} />
+              <EyeOff size={14} />
             </button>
-            
-            {showActions && (
-              <div className="project-actions-menu">
-                <button onClick={onEdit} className="btn-ghost btn-sm">
-                  <Edit size={12} /> Edit
-                </button>
-                <button 
-                  onClick={() => onToggleHidden()} 
-                  className="btn-ghost btn-sm"
-                >
-                  <EyeOff size={12} /> Hide
-                </button>
-                <button onClick={onDelete} className="btn-ghost btn-sm text-error">
-                  <Trash2 size={12} /> Delete
-                </button>
-              </div>
-            )}
           </div>
         </div>
 
@@ -615,7 +683,7 @@ const ContextMenu = ({ contextMenu, onEventEdit, onEventDelete, onClose }) => {
                     onClose();
                   }}
                 >
-                  <Edit size={10} />
+                  Edit
                 </button>
                 <button
                   className="btn-ghost btn-sm"
@@ -624,7 +692,7 @@ const ContextMenu = ({ contextMenu, onEventEdit, onEventDelete, onClose }) => {
                     onClose();
                   }}
                 >
-                  <Trash2 size={10} />
+                  Delete
                 </button>
               </div>
             </div>
