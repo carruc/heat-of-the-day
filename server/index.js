@@ -47,7 +47,6 @@ app.post('/api/projects', (req, res) => {
     id: uuidv4(),
     name,
     color,
-    collapsed: true,
     hidden: false,
     order: projects.length,
     createdAt: new Date().toISOString()
@@ -63,7 +62,7 @@ app.get('/api/projects', (req, res) => {
 
 app.put('/api/projects/:id', (req, res) => {
   const { id } = req.params;
-  const { name, color, collapsed, hidden, order } = req.body;
+  const { name, color, hidden, order } = req.body;
   
   const project = findProjectById(id);
   if (!project) {
@@ -72,7 +71,6 @@ app.put('/api/projects/:id', (req, res) => {
 
   if (name !== undefined) project.name = name;
   if (color !== undefined) project.color = color;
-  if (collapsed !== undefined) project.collapsed = collapsed;
   if (hidden !== undefined) project.hidden = hidden;
   if (order !== undefined) project.order = order;
 

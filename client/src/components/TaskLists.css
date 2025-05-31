@@ -3,12 +3,44 @@
   display: flex;
   flex-direction: column;
   padding: var(--spacing-lg);
+  /* Make task lists take full height and enable scrolling */
+  height: 100%;
+  overflow: hidden;
 }
 
 .task-lists-container {
   display: flex;
   gap: var(--spacing-lg);
   align-items: flex-start;
+  /* Enable scrolling for the container */
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Custom scrollbar styling for better UX */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  /* Add space on the right to avoid scrollbar being too close to content */
+  padding-right: var(--spacing-md);
+}
+
+/* Custom webkit scrollbar for better cross-browser support */
+.task-lists-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.task-lists-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.task-lists-container::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.task-lists-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--border-dark, var(--text-secondary));
 }
 
 .task-lists-header {
@@ -24,9 +56,14 @@
 /* Project cards grid */
 .project-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: var(--spacing-lg);
   flex: 1;
+  /* Ensure grid works properly in scrollable container */
+  min-height: min-content;
+  align-content: start;
+  /* Prevent cards from stretching vertically */
+  align-items: start;
 }
 
 /* Individual project task card */
@@ -261,6 +298,54 @@
   padding: var(--spacing-xs);
 }
 
+/* Card footer with new layout */
+.card-footer {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+/* Pill-shaped add task button */
+.add-task-btn {
+  border-radius: 20px;
+  padding: var(--spacing-xs) var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.875rem;
+  font-weight: 500;
+  min-width: auto;
+  width: auto;
+}
+
+/* Card hover actions - appear on hover in bottom right */
+.card-hover-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.project-task-card:hover .card-hover-actions {
+  opacity: 1;
+  visibility: visible;
+}
+
+.card-hover-actions button {
+  padding: var(--spacing-xs);
+  opacity: 0.7;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.card-hover-actions button:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
 /* Empty state */
 .empty-state {
   padding: var(--spacing-lg);
@@ -332,7 +417,7 @@
 /* Responsive design */
 @media (max-width: 1200px) {
   .project-cards-grid {
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: var(--spacing-md);
   }
   
@@ -345,11 +430,17 @@
 @media (max-width: 768px) {
   .task-lists {
     padding: var(--spacing-md);
+    /* Maintain scrollable behavior on mobile */
+    height: 100%;
+    overflow: hidden;
   }
   
   .task-lists-container {
     flex-direction: column;
     gap: var(--spacing-md);
+    /* Keep scrolling on mobile */
+    overflow-y: auto;
+    overflow-x: hidden;
   }
   
   .project-cards-grid {

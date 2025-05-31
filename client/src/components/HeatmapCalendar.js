@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, EyeOff } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, EyeOff, Calendar, X } from 'lucide-react';
 import { dataUtils } from '../services/api';
 import './HeatmapCalendar.css';
 
@@ -18,7 +18,9 @@ const HeatmapCalendar = ({
   onEventEdit,
   onEventDelete,
   onNewProject,
-  onNewEvent
+  onNewEvent,
+  showEventTitles,
+  onToggleEventTitles
 }) => {
   const [daysToShow, setDaysToShow] = useState(51); // Simple fixed value for now
   const [hoveredCell, setHoveredCell] = useState(null);
@@ -123,15 +125,29 @@ const HeatmapCalendar = ({
   const heatmapData = useMemo(() => {
     const data = {};
     
+    // Debug: Log all events to see what we have
+    if (events.length > 0) {
+      console.log('All events in heatmap calculation:', events);
+    }
+    
     projects.forEach(project => {
       data[project.id] = {};
+      const projectEvents = dataUtils.getProjectEvents(events, project.id);
+      
+      // Debug: Log project events
+      if (projectEvents.length > 0) {
+        console.log(`Project "${project.name}" events:`, projectEvents);
+      }
+      
       dateRange.forEach(date => {
         const completedCount = dataUtils.getCompletedTasksCount(tasks, project.id, date);
         const intensity = dataUtils.getHeatmapIntensity(completedCount);
-        const eventsForDate = dataUtils.getEventsForDate(
-          dataUtils.getProjectEvents(events, project.id), 
-          date
-        );
+        const eventsForDate = dataUtils.getEventsForDate(projectEvents, date);
+        
+        // Debug: Log when events are found for a date
+        if (eventsForDate.length > 0) {
+          console.log(`Found ${eventsForDate.length} events for ${date.toISOString().split('T')[0]}:`, eventsForDate);
+        }
         
         data[project.id][date.toISOString()] = {
           completedTasks: completedCount,
@@ -167,14 +183,6 @@ const HeatmapCalendar = ({
     const project = projects.find(p => p.id === projectId);
     if (project) {
       await onProjectUpdate(projectId, { hidden: !project.hidden });
-    }
-  };
-
-  // Handle project collapse toggle - Implements D3
-  const handleToggleCollapsed = async (projectId) => {
-    const project = projects.find(p => p.id === projectId);
-    if (project) {
-      await onProjectUpdate(projectId, { collapsed: !project.collapsed });
     }
   };
 
@@ -472,7 +480,6 @@ const HeatmapCalendar = ({
             dateRange={dateRange}
             heatmapData={heatmapData[project.id] || {}}
             gridTemplateColumns={gridTemplateColumns}
-            onToggleCollapsed={() => handleToggleCollapsed(project.id)}
             onMoveUp={() => handleMoveProject(project.id, 'up')}
             onMoveDown={() => handleMoveProject(project.id, 'down')}
             onToggleHidden={() => handleToggleHidden(project.id)}
@@ -480,7 +487,10 @@ const HeatmapCalendar = ({
             onDelete={() => onProjectDelete(project.id)}
             onCellContextMenu={handleCellContextMenu}
             onCellHover={setHoveredCell}
+            onEventEdit={onEventEdit}
             events={dataUtils.getProjectEvents(events, project.id)}
+            showEventTitles={showEventTitles}
+            onToggleEventTitles={onToggleEventTitles}
           />
         ))}
 
@@ -542,7 +552,6 @@ const ProjectRow = ({
   dateRange,
   heatmapData,
   gridTemplateColumns,
-  onToggleCollapsed,
   onMoveUp,
   onMoveDown,
   onToggleHidden,
@@ -550,7 +559,10 @@ const ProjectRow = ({
   onDelete,
   onCellContextMenu,
   onCellHover,
-  events
+  onEventEdit,
+  events,
+  showEventTitles,
+  onToggleEventTitles
 }) => {
 
   return (
@@ -560,19 +572,18 @@ const ProjectRow = ({
         <div 
           className="project-header"
           style={{ borderLeftColor: project.color }}
-          onClick={onToggleCollapsed}
         >
-          {/* Collapse/expand toggle on the left */}
-          <div className="project-controls">
+          {/* Show events button - always visible on the left */}
+          <div className="project-actions-left">
             <button
               className="btn-ghost btn-sm"
               onClick={(e) => {
                 e.stopPropagation();
-                onToggleCollapsed();
+                onToggleEventTitles();
               }}
-              title={project.collapsed ? "Expand" : "Collapse"}
+              title={showEventTitles ? "Hide event titles" : "Show event titles"}
             >
-              {project.collapsed ? '▶' : '▼'}
+              {showEventTitles ? <Calendar size={14} /> : <EyeOff size={14} />}
             </button>
           </div>
 
@@ -580,42 +591,38 @@ const ProjectRow = ({
           <div className="project-info">
             <div className="project-main-info">
               <span className="project-name" title={project.name}>{project.name}</span>
-              {!project.collapsed && events.length > 0 && (
+              {events.length > 0 && (
                 <span className="project-events-count text-muted">
                   {events.length} event{events.length !== 1 ? 's' : ''}
                 </span>
               )}
             </div>
-            
-            {/* Move buttons - only visible when expanded */}
-            {!project.collapsed && (
-              <div className="project-move-controls">
-                <button 
-                  className="btn-ghost btn-sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onMoveUp();
-                  }}
-                  title="Move up"
-                >
-                  <ChevronUp size={12} />
-                </button>
-                <button 
-                  className="btn-ghost btn-sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onMoveDown();
-                  }}
-                  title="Move down"
-                >
-                  <ChevronDown size={12} />
-                </button>
-              </div>
-            )}
           </div>
 
-          {/* Hide project button */}
-          <div className="project-actions">
+          {/* Move and hide buttons - appear on hover on the right */}
+          <div className="project-actions-right">
+            <div className="move-buttons-stack">
+              <button 
+                className="btn-ghost btn-sm move-up"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMoveUp();
+                }}
+                title="Move up"
+              >
+                <ChevronUp size={12} />
+              </button>
+              <button 
+                className="btn-ghost btn-sm move-down"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMoveDown();
+                }}
+                title="Move down"
+              >
+                <ChevronDown size={12} />
+              </button>
+            </div>
             <button
               className="btn-ghost btn-sm"
               onClick={(e) => {
@@ -624,7 +631,7 @@ const ProjectRow = ({
               }}
               title="Hide project"
             >
-              <EyeOff size={14} />
+              <X size={14} />
             </button>
           </div>
         </div>
@@ -677,48 +684,27 @@ const ProjectRow = ({
                 }}
               />
               
-              {/* Event indicators - Implements D3 */}
-              {!project.collapsed && cellData.events.map(event => (
-                <div
-                  key={event.id}
-                  className={`event-indicator ${event.type}`}
-                  title={`${event.type}: ${event.name}`}
-                >
-                  {event.name.substring(0, 1)}
+              {/* Event names directly under the heatmap square */}
+              {cellData.events.length > 0 && showEventTitles && (
+                <div className="cell-event-names">
+                  {cellData.events.map(event => (
+                    <div
+                      key={event.id}
+                      className={`event-name ${event.type}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEventEdit(event);
+                      }}
+                    >
+                      {event.name}
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           );
         })}
       </div>
-
-      {/* Expanded view with event names - Implements D3 */}
-      {!project.collapsed && events.length > 0 && (
-        <div className="project-events-row" style={{ gridTemplateColumns }}>
-          <div className="project-events-header">
-            <span className="text-muted text-sm">Events</span>
-          </div>
-          {dateRange.map((date, dateIndex) => {
-            const cellData = heatmapData[date.toISOString()] || { events: [] };
-            const today = new Date();
-            const isPastDate = date < today && date.toDateString() !== today.toDateString();
-            
-            return (
-              <div key={dateIndex} className={`event-names-cell ${isPastDate ? 'past-date' : ''}`}>
-                {cellData.events.map(event => (
-                  <div
-                    key={event.id}
-                    className={`event-name ${event.type}`}
-                    onClick={() => onEdit && onEdit(event)}
-                  >
-                    {event.name}
-                  </div>
-                ))}
-              </div>
-            );
-          })}
-        </div>
-      )}
     </>
   );
 };

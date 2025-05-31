@@ -39,6 +39,9 @@
   --spacing-lg: 24px;
   --spacing-xl: 32px;
 
+  /* Component sizes */
+  --header-height: 80px;
+
   /* Past date specific colors */
   --past-date-bg: var(--surface-hover);
   --past-date-text: var(--text-muted);
@@ -85,6 +88,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+/* Prevent page-level scrolling */
+html, body {
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -168,6 +177,10 @@ h4 { font-size: 1.125rem; }
 .btn-sm {
   padding: var(--spacing-xs) var(--spacing-sm);
   font-size: 0.75rem;
+}
+
+.btn-pill {
+  border-radius: 20px;
 }
 
 .btn:disabled {
@@ -336,6 +349,11 @@ h4 { font-size: 1.125rem; }
 
 /* Responsive utilities */
 @media (max-width: 768px) {
+  :root {
+    /* Adjust header height for mobile */
+    --header-height: 70px;
+  }
+
   .modal-content {
     margin: var(--spacing-md);
     max-width: calc(100vw - 2 * var(--spacing-md));

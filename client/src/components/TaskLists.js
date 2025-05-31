@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Check, ChevronDown, ChevronRight, EyeOff, Edit, Trash2 } from 'lucide-react';
+import { Plus, Check, ChevronDown, ChevronRight, EyeOff, Edit, Trash2, X } from 'lucide-react';
 import { dataUtils } from '../services/api';
 import TaskModal from './TaskModal';
 import './TaskLists.css';
@@ -203,25 +203,8 @@ const ProjectTaskCard = ({
             </div>
           </div>
           
+          {/* Only hide button in upper right corner */}
           <div className="project-card-actions">
-            <button
-              className="btn btn-ghost btn-sm"
-              onClick={onProjectEdit}
-              title="Edit project"
-            >
-              <Edit size={16} />
-            </button>
-            <button
-              className="btn btn-ghost btn-sm"
-              onClick={() => {
-                if (window.confirm('Are you sure you want to delete this project? All associated tasks and events will be removed.')) {
-                  onProjectDelete();
-                }
-              }}
-              title="Delete project"
-            >
-              <Trash2 size={16} />
-            </button>
             <button
               className="btn btn-ghost btn-sm"
               onClick={onToggleExpanded}
@@ -234,7 +217,7 @@ const ProjectTaskCard = ({
               onClick={onToggleHidden}
               title="Hide this task list"
             >
-              <EyeOff size={16} />
+              <X size={16} />
             </button>
           </div>
         </div>
@@ -300,15 +283,37 @@ const ProjectTaskCard = ({
         )}
       </div>
 
-      {/* Add task button - Implements D9 */}
+      {/* Card footer with pill-shaped add task button and hover actions */}
       <div className="card-footer">
         <button
-          className="btn btn-ghost w-full"
+          className="btn btn-primary btn-pill add-task-btn"
           onClick={onCreateTask}
         >
           <Plus size={16} />
           Add Task
         </button>
+        
+        {/* Edit and delete buttons - appear on hover in bottom right */}
+        <div className="card-hover-actions">
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={onProjectEdit}
+            title="Edit project"
+          >
+            <Edit size={16} />
+          </button>
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => {
+              if (window.confirm('Are you sure you want to delete this project? All associated tasks and events will be removed.')) {
+                onProjectDelete();
+              }
+            }}
+            title="Delete project"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
       </div>
     </div>
   );

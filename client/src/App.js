@@ -24,6 +24,7 @@ function App() {
   // Heatmap settings - Implements R15, D1.3
   const [timeScale, setTimeScale] = useState(1);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [showEventTitles, setShowEventTitles] = useState(true);
 
   // Load initial data
   useEffect(() => {
@@ -190,6 +191,10 @@ function App() {
     setShowEventModal(true);
   };
 
+  const handleToggleEventTitles = () => {
+    setShowEventTitles(prev => !prev);
+  };
+
   if (loading) {
     return (
       <div className="app-loading">
@@ -240,6 +245,8 @@ function App() {
             onEventDelete={handleDeleteEvent}
             onNewProject={() => setShowProjectModal(true)}
             onNewEvent={() => setShowEventModal(true)}
+            showEventTitles={showEventTitles}
+            onToggleEventTitles={handleToggleEventTitles}
           />
         </section>
 

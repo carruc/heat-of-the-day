@@ -190,11 +190,28 @@ export const dataUtils = {
 
   // Get events for a specific date
   getEventsForDate(events, date) {
-    const targetDate = new Date(date).toDateString();
-    return events.filter(event => {
-      const eventDate = new Date(event.date).toDateString();
-      return eventDate === targetDate;
+    // Normalize the target date to compare only the date part (YYYY-MM-DD)
+    const targetDate = new Date(date);
+    const targetDateString = targetDate.getFullYear() + '-' + 
+                           String(targetDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                           String(targetDate.getDate()).padStart(2, '0');
+    
+    console.log(`Looking for events on date: ${targetDateString} (from ${date})`);
+    
+    const matchingEvents = events.filter(event => {
+      // Normalize the event date to compare only the date part (YYYY-MM-DD)
+      const eventDate = new Date(event.date);
+      const eventDateString = eventDate.getFullYear() + '-' + 
+                             String(eventDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                             String(eventDate.getDate()).padStart(2, '0');
+      
+      const matches = eventDateString === targetDateString;
+      console.log(`  Event "${event.name}" (${event.date}) -> ${eventDateString} | Matches: ${matches}`);
+      
+      return matches;
     });
+    
+    return matchingEvents;
   },
 
   // Calculate heatmap intensity (0-1) based on task completion
@@ -220,32 +237,44 @@ export const dataUtils = {
     
     switch (format) {
       case 'short':
-        return d.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric' 
-        });
+        // DD/MM format
+        const day = d.getDate().toString().padStart(2, '0');
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        return `${day}/${month}`;
       case 'long':
-        return d.toLocaleDateString('en-US', { 
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long', 
-          day: 'numeric' 
-        });
+        // DD/MM/YYYY format with day name
+        const longDay = d.getDate().toString().padStart(2, '0');
+        const longMonth = (d.getMonth() + 1).toString().padStart(2, '0');
+        const year = d.getFullYear();
+        const weekday = d.toLocaleDateString('en-US', { weekday: 'long' });
+        return `${weekday}, ${longDay}/${longMonth}/${year}`;
+      case 'date-only':
+        // DD/MM/YYYY format
+        const dateDay = d.getDate().toString().padStart(2, '0');
+        const dateMonth = (d.getMonth() + 1).toString().padStart(2, '0');
+        const dateYear = d.getFullYear();
+        return `${dateDay}/${dateMonth}/${dateYear}`;
       case 'time':
         return d.toLocaleTimeString('en-US', {
           hour: '2-digit',
           minute: '2-digit'
         });
       case 'datetime':
-        return d.toLocaleString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
+        // DD/MM/YYYY HH:MM format
+        const dtDay = d.getDate().toString().padStart(2, '0');
+        const dtMonth = (d.getMonth() + 1).toString().padStart(2, '0');
+        const dtYear = d.getFullYear();
+        const time = d.toLocaleTimeString('en-US', {
           hour: '2-digit',
           minute: '2-digit'
         });
+        return `${dtDay}/${dtMonth}/${dtYear} ${time}`;
       default:
-        return d.toLocaleDateString();
+        // Default to DD/MM/YYYY
+        const defDay = d.getDate().toString().padStart(2, '0');
+        const defMonth = (d.getMonth() + 1).toString().padStart(2, '0');
+        const defYear = d.getFullYear();
+        return `${defDay}/${defMonth}/${defYear}`;
     }
   },
 

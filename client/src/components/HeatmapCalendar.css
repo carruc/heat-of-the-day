@@ -102,8 +102,7 @@
 
 .month-headers,
 .date-headers,
-.project-row,
-.project-events-row {
+.project-row {
   display: grid;
   grid-template-columns: 250px repeat(auto-fit, minmax(20px, 32px));
   gap: 1px;
@@ -112,7 +111,7 @@
 
 .project-column-header {
   background-color: transparent;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-sm);
   font-weight: 600;
   border-right: none;
   display: flex;
@@ -243,18 +242,20 @@
 /* Project row styles */
 .project-row {
   border-bottom: none;
+  position: relative;
 }
 
 .project-header {
   background-color: transparent;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-sm); /* Reduced padding for compactness */
   border-right: none;
   border-left: 4px solid var(--primary-color);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   display: flex;
-  align-items: flex-start;
+  align-items: center; /* Changed to center for better alignment */
   justify-content: space-between;
-  gap: var(--spacing-sm);
-  min-height: 48px;
+  gap: var(--spacing-xs); /* Reduced gap for compactness */
+  min-height: 40px; /* Reduced height for compactness */
   position: relative;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -264,30 +265,39 @@
   background-color: rgba(0, 0, 0, 0.02);
 }
 
-.project-controls {
+/* Left actions - always visible */
+.project-actions-left {
   display: flex;
-  gap: var(--spacing-xs);
   align-items: center;
   flex-shrink: 0;
 }
 
-.project-controls button {
-  padding: var(--spacing-xs);
-  opacity: 0.8;
-  transition: opacity 0.2s;
+.project-actions-left button {
+  padding: 2px 4px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
 }
 
-.project-controls button:hover {
+.project-actions-left button:hover {
   opacity: 1;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
+/* Project info - center */
 .project-info {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--spacing-xs);
-  min-width: 0; /* Allow shrinking */
+  gap: 2px; /* Reduced gap for compactness */
+  min-width: 0;
+  margin-left: var(--spacing-xs); /* Small margin from left action */
+  margin-right: var(--spacing-xs); /* Small margin to right actions */
 }
 
 .project-main-info {
@@ -295,25 +305,7 @@
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  min-width: 0; /* Allow shrinking */
-}
-
-.project-move-controls {
-  display: flex;
-  gap: var(--spacing-xs);
-  align-items: center;
-  margin-top: var(--spacing-xs);
-}
-
-.project-move-controls button {
-  padding: var(--spacing-xs);
-  opacity: 0.6;
-  transition: opacity 0.2s;
-  font-size: 0.75rem;
-}
-
-.project-move-controls button:hover {
-  opacity: 1;
+  min-width: 0;
 }
 
 .project-name {
@@ -324,15 +316,68 @@
   text-overflow: ellipsis;
   max-width: 100%;
   text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
+  width: 100%;
 }
 
 .project-events-count {
   font-size: 0.75rem;
 }
 
-.project-actions {
-  position: relative;
+/* Right actions - appear on hover */
+.project-actions-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
   flex-shrink: 0;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.project-header:hover .project-actions-right {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Stack for up/down move buttons */
+.move-buttons-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  align-items: center;
+}
+
+.move-buttons-stack button {
+  padding: 1px 3px;
+  min-width: 18px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.move-buttons-stack button:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* X button (hide project) styling */
+.project-actions-right > button {
+  padding: 2px 4px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.project-actions-right > button:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Heatmap cells */
@@ -367,71 +412,37 @@
 
 /* Event indicators in cells */
 .heatmap-cell.has-milestone {
-  border: 2px solid var(--text-muted);
+  /* Remove border from grid cell */
 }
 
 .heatmap-cell.has-deadline {
-  border: 2px solid var(--error-color);
+  /* Remove border from grid cell */
 }
 
 .event-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--text-secondary);
-  color: white;
-  font-size: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  position: absolute;
-  z-index: 2;
-  border: 1px solid var(--background);
+  /* Removed - no longer using event indicators */
 }
 
 .event-indicator.milestone {
-  background-color: var(--text-muted);
-  top: 2px;
-  right: 2px;
+  /* Removed - no longer using event indicators */
 }
 
 .event-indicator.deadline {
-  background-color: var(--error-color);
-  top: 2px;
-  left: 2px;
+  /* Removed - no longer using event indicators */
 }
 
-/* Project events row (expanded view) */
-.project-events-row {
-  background-color: transparent;
-  border-bottom: none;
-}
+/* Old project events row styles removed - events now display directly under heatmap squares */
 
-.project-events-header {
-  background-color: transparent;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-right: none;
-  display: flex;
-  align-items: center;
-  min-height: 32px;
-}
-
-.event-names-cell {
-  min-height: 24px;
-  min-width: 20px;
-  padding: 2px;
+/* Event names within heatmap cells */
+.cell-event-names {
+  position: absolute;
+  top: calc(50% + 16px); /* Position below the 16px square with 4px padding */
+  right: calc(50% - 12px); /* Align right edge with outline right edge (8px square half + 4px outline offset) */
   display: flex;
   flex-direction: column;
   gap: 1px;
-  font-size: 0.7rem;
-  background-color: transparent;
-  border: none;
-}
-
-.event-names-cell.past-date {
-  background-color: transparent;
-  opacity: var(--past-date-opacity);
+  max-width: 160px; /* Maximum width constraint */
+  z-index: 10;
 }
 
 .event-name {
@@ -441,8 +452,14 @@
   cursor: pointer;
   transition: background-color 0.2s;
   word-break: break-word;
-  max-width: 100%;
   text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  width: 100%; /* Take full width of container */
 }
 
 .event-name:hover {
@@ -574,17 +591,16 @@
 @media (max-width: 1024px) {
   .month-headers,
   .date-headers,
-  .project-row,
-  .project-events-row {
+  .project-row {
     grid-template-columns: 200px repeat(auto-fit, minmax(18px, 28px));
   }
   
   .project-column-header {
-    font-size: 0.875rem;
+    padding: var(--spacing-sm) var(--spacing-md);
   }
   
   .heatmap-cell {
-    min-height: 40px;
+    min-height: 36px;
     min-width: 18px;
   }
   
@@ -595,12 +611,25 @@
   }
   
   .date-header {
-    min-height: 40px;
+    min-height: 36px;
     min-width: 18px;
+    font-size: 0.8rem;
   }
 
   .heatmap-action-buttons {
     grid-template-columns: 200px 1fr;
+  }
+  
+  /* Adjust outline offset for tablet size */
+  .heatmap-cell.has-milestone .heatmap-square,
+  .heatmap-cell.has-deadline .heatmap-square {
+    outline-offset: 3px;
+  }
+
+  /* Adjust event text positioning for tablet */
+  .cell-event-names {
+    top: calc(50% + 14px); /* Position below the 14px square with 4px padding */
+    right: calc(50% - 11px); /* Align right edge with outline right edge (7px square half + 4px outline offset) */
   }
   
   /* Adjust month indicator lines for tablet */
@@ -631,8 +660,7 @@
   
   .month-headers,
   .date-headers,
-  .project-row,
-  .project-events-row {
+  .project-row {
     grid-template-columns: 160px repeat(auto-fit, minmax(16px, 24px));
   }
   
@@ -647,9 +675,17 @@
   .project-main-info {
     width: 100%;
   }
+
+  /* Make right actions always visible on mobile for better touch interaction */
+  .project-actions-right {
+    opacity: 1;
+  }
   
-  .project-move-controls {
-    margin-top: var(--spacing-xs);
+  .project-actions-right > button,
+  .project-actions-left button {
+    min-width: 24px;
+    height: 24px;
+    padding: 4px 6px;
   }
   
   .heatmap-cell {
@@ -682,9 +718,23 @@
   }
   
   .event-indicator {
-    width: 6px;
-    height: 6px;
-    font-size: 4px;
+    /* Removed - no longer using event indicators */
+  }
+
+  /* Adjust outline offset for mobile size */
+  .heatmap-cell.has-milestone .heatmap-square,
+  .heatmap-cell.has-deadline .heatmap-square {
+    outline-offset: 2px;
+  }
+
+  /* Adjust event text positioning for mobile */
+  .cell-event-names {
+    top: calc(50% + 12px); /* Position below the 10px square with 4px padding */
+    right: calc(50% - 9px); /* Align right edge with outline right edge (5px square half + 4px outline offset) */
+  }
+  
+  .event-name {
+    font-size: 0.55rem;
   }
 
   .heatmap-action-buttons {
@@ -707,6 +757,13 @@
   .month-header:not(:empty) {
     padding-left: 12px;
     font-size: 0.75rem;
+  }
+
+  /* Adjust stacked move buttons for mobile */
+  .move-buttons-stack button {
+    min-width: 22px;
+    height: 20px;
+    padding: 2px 4px;
   }
 }
 
@@ -798,8 +855,54 @@
   box-sizing: border-box;
 }
 
+/* Event outlines on heatmap squares - 4px away from edges with same rounded corners */
+.heatmap-cell.has-milestone .heatmap-square {
+  outline: 2px solid var(--text-muted);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.heatmap-cell.has-deadline .heatmap-square {
+  outline: 2px solid var(--error-color);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
 .heatmap-cell:hover .heatmap-square {
   transform: translate(-50%, -50%) scale(1.2);
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.project-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  min-width: 0; /* Allow shrinking */
+  margin-left: 0; /* Remove the previous margin since actions are now on the left */
+}
+
+.project-main-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  min-width: 0; /* Allow shrinking */
+}
+
+.project-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
+  width: 100%; /* Take full available width */
+}
+
+.project-events-count {
+  font-size: 0.75rem;
 } 

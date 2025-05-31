@@ -143,7 +143,7 @@ const TaskModal = ({ task, project, events, onSave, onClose }) => {
                 <option value="">No specific event</option>
                 {sortedEvents.map(event => (
                   <option key={event.id} value={event.id}>
-                    {event.name} ({event.type}) - {dataUtils.formatDate(event.date, 'short')}
+                    {event.name} ({event.type}) - {dataUtils.formatDate(event.date, 'date-only')}
                   </option>
                 ))}
               </select>
