@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Eye, EyeOff, MoreVertical, Edit, Trash2 } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, EyeOff, MoreVertical, Edit, Trash2 } from 'lucide-react';
 import { dataUtils } from '../services/api';
 import './HeatmapCalendar.css';
 
@@ -20,14 +20,86 @@ const HeatmapCalendar = ({
   onNewProject,
   onNewEvent
 }) => {
-  const [daysToShow, setDaysToShow] = useState(30);
+  const [daysToShow, setDaysToShow] = useState(51); // Simple fixed value for now
   const [hoveredCell, setHoveredCell] = useState(null);
   const [contextMenu, setContextMenu] = useState(null);
+  const calendarRef = useRef(null);
+
+  // Calculate how many days can fit in the visible area
+  // Th Iis determines the number of columns that will be visible without horizontal scrolling
+  const calculateDaysThatFit = useCallback(() => {
+    if (!calendarRef.current) return 52; // Fallback
+    
+    // 1. Get date-headers element
+    const dateHeadersDiv = calendarRef.current.querySelector('.date-headers');
+    if (!dateHeadersDiv) return 52; // Fallback
+    
+    // 2. Get date-headers width and subtract project column width
+    const dateHeadersWidth = dateHeadersDiv.offsetWidth;
+    const projectColumnWidth = window.innerWidth <= 768 ? 160 : window.innerWidth <= 1024 ? 200 : 250;
+    
+    // 3. Calculate available space for date columns
+    const availableSpace = dateHeadersWidth - projectColumnWidth;
+    
+    // 4. Divide available space by minimum column width (32px)
+    const minColumnWidth = 32;
+    const maxColumns = availableSpace / minColumnWidth;
+    
+    // 5. Take the rounded ceiling of that number
+    const result = Math.ceil(maxColumns);
+    
+    // 6. Return that number
+    return Math.max(result, 20); // Ensure minimum of 20 columns
+  }, []);
+
+  // Use the calculated number of days that fit in the visible area
+  const visibleDays = calculateDaysThatFit();
+
+  // Update daysToShow when the calculation changes
+  useEffect(() => {
+    const newDaysToShow = calculateDaysThatFit();
+    setDaysToShow(newDaysToShow);
+  }, [calculateDaysThatFit]);
+
+  // Recalculate on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setTimeout(() => {
+        const newDaysToShow = calculateDaysThatFit();
+        setDaysToShow(newDaysToShow);
+      }, 100);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [calculateDaysThatFit]);
+
+  // Create the grid template for exactly the number of visible days
+  const gridTemplateColumns = `250px repeat(${visibleDays}, minmax(20px, 32px))`;
 
   // Generate date range for the heatmap - Implements D1.1, D4
   const dateRange = useMemo(() => {
-    return dataUtils.generateDateRange(currentDate, timeScale, daysToShow);
-  }, [currentDate, timeScale, daysToShow]);
+    // Custom date range generation for fixed number of columns
+    const generateFixedColumnDateRange = (centerDate, timeScale, numColumns) => {
+      const dates = [];
+      const center = new Date(centerDate);
+      
+      // Start from 7 days before the center date
+      const startDate = new Date(center);
+      startDate.setDate(center.getDate() - 7);
+      
+      // Generate exactly numColumns dates, each representing timeScale days
+      for (let i = 0; i < numColumns; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + (i * timeScale));
+        dates.push(new Date(date));
+      }
+      
+      return dates;
+    };
+    
+    return generateFixedColumnDateRange(currentDate, timeScale, visibleDays);
+  }, [currentDate, timeScale, visibleDays]);
 
   // Sort and filter projects - Implements D7, D8
   const visibleProjects = useMemo(() => {
@@ -165,7 +237,7 @@ const HeatmapCalendar = ({
   const monthHeaders = getMonthHeaders();
 
   return (
-    <div className="heatmap-calendar">
+    <div className="heatmap-calendar" ref={calendarRef}>
       {/* Header with controls - Implements R15, D1.3 */}
       <div className="heatmap-header">
         <div className="heatmap-controls">
@@ -213,7 +285,7 @@ const HeatmapCalendar = ({
       {/* Calendar grid */}
       <div className="heatmap-grid">
         {/* Month headers - Implements D1.2 */}
-        <div className="month-headers">
+        <div className="month-headers" style={{ gridTemplateColumns }}>
           <div className="project-column-header"></div>
           {monthHeaders.map((header, index) => (
             <div
@@ -230,17 +302,22 @@ const HeatmapCalendar = ({
         </div>
 
         {/* Date headers */}
-        <div className="date-headers">
+        <div className="date-headers" style={{ gridTemplateColumns }}>
           <div className="project-column-header">Projects</div>
           {dateRange.map((date, index) => {
             const today = new Date();
             const isPastDate = date < today && date.toDateString() !== today.toDateString();
             
+            // Get weekday initial (M, T, W, T, F, S, SS)
+            const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            const weekdayInitials = ['SS', 'M', 'T', 'W', 'T', 'F', 'S'];
+            const weekdayInitial = weekdayInitials[dayOfWeek];
+            
             return (
               <div key={index} className={`date-header ${isPastDate ? 'past-date' : ''}`}>
                 <span className="date-day">{date.getDate()}</span>
                 <span className="date-weekday">
-                  {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                  {weekdayInitial}
                 </span>
               </div>
             );
@@ -254,6 +331,7 @@ const HeatmapCalendar = ({
             project={project}
             dateRange={dateRange}
             heatmapData={heatmapData[project.id] || {}}
+            gridTemplateColumns={gridTemplateColumns}
             onToggleCollapsed={() => handleToggleCollapsed(project.id)}
             onMoveUp={() => handleMoveProject(project.id, 'up')}
             onMoveDown={() => handleMoveProject(project.id, 'down')}
@@ -323,6 +401,7 @@ const ProjectRow = ({
   project,
   dateRange,
   heatmapData,
+  gridTemplateColumns,
   onToggleCollapsed,
   onMoveUp,
   onMoveDown,
@@ -337,7 +416,7 @@ const ProjectRow = ({
 
   return (
     <>
-      <div className="project-row">
+      <div className="project-row" style={{ gridTemplateColumns }}>
         {/* Project header */}
         <div 
           className="project-header"
@@ -459,7 +538,7 @@ const ProjectRow = ({
 
       {/* Expanded view with event names - Implements D3 */}
       {!project.collapsed && events.length > 0 && (
-        <div className="project-events-row">
+        <div className="project-events-row" style={{ gridTemplateColumns }}>
           <div className="project-events-header">
             <span className="text-muted text-sm">Events</span>
           </div>

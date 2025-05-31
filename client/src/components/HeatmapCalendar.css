@@ -42,7 +42,7 @@
 .project-row,
 .project-events-row {
   display: grid;
-  grid-template-columns: 250px repeat(auto-fit, minmax(32px, 1fr));
+  grid-template-columns: 250px repeat(auto-fit, minmax(20px, 32px));
   gap: 1px;
   margin-bottom: 1px;
 }
@@ -80,7 +80,7 @@
   align-items: center;
   justify-content: center;
   min-height: 48px;
-  min-width: 32px;
+  min-width: 20px;
 }
 
 .date-header.past-date {
@@ -228,7 +228,7 @@
 /* Heatmap cells */
 .heatmap-cell {
   min-height: 48px;
-  min-width: 32px;
+  min-width: 20px;
   border: 1px solid var(--border-light);
   position: relative;
   cursor: pointer;
@@ -299,7 +299,7 @@
 
 .event-names-cell {
   min-height: 24px;
-  min-width: 32px;
+  min-width: 20px;
   padding: 2px;
   display: flex;
   flex-direction: column;
@@ -447,7 +447,7 @@
   .date-headers,
   .project-row,
   .project-events-row {
-    grid-template-columns: 200px repeat(auto-fit, minmax(28px, 1fr));
+    grid-template-columns: 200px repeat(auto-fit, minmax(18px, 28px));
   }
   
   .project-column-header {
@@ -456,12 +456,12 @@
   
   .heatmap-cell {
     min-height: 40px;
-    min-width: 28px;
+    min-width: 18px;
   }
   
   .date-header {
     min-height: 40px;
-    min-width: 28px;
+    min-width: 18px;
   }
 
   .heatmap-action-buttons {
@@ -488,7 +488,7 @@
   .date-headers,
   .project-row,
   .project-events-row {
-    grid-template-columns: 160px repeat(auto-fit, minmax(24px, 1fr));
+    grid-template-columns: 160px repeat(auto-fit, minmax(16px, 24px));
   }
   
   .project-header {
@@ -509,12 +509,12 @@
   
   .heatmap-cell {
     min-height: 32px;
-    min-width: 24px;
+    min-width: 16px;
   }
   
   .date-header {
     min-height: 32px;
-    min-width: 24px;
+    min-width: 16px;
     font-size: 0.75rem;
   }
   
