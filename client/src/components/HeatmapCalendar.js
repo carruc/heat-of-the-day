@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, EyeOff, Calendar, X } from 'lucide-react';
 import { dataUtils } from '../services/api';
+import EventCard from './EventCard';
 import './HeatmapCalendar.css';
 
 // Implements requirements R14, R15, D1-D8
@@ -26,7 +27,10 @@ const HeatmapCalendar = ({
   const [hoveredCell, setHoveredCell] = useState(null);
   const [contextMenu, setContextMenu] = useState(null);
   const [isCustomTimeScale, setIsCustomTimeScale] = useState(false);
+  const [showEventCard, setShowEventCard] = useState(false);
+  const [eventCardPosition, setEventCardPosition] = useState({ x: 0, y: 0 });
   const calendarRef = useRef(null);
+  const newEventButtonRef = useRef(null);
 
   // Automatically set custom mode if timeScale doesn't match presets
   useEffect(() => {
@@ -208,12 +212,79 @@ const HeatmapCalendar = ({
     });
   };
 
-  // Close context menu when clicking outside
+  // Handle context menu clicks outside to close
   useEffect(() => {
-    const handleClickOutside = () => setContextMenu(null);
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
+    if (contextMenu) {
+      const handleClickOutside = () => setContextMenu(null);
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [contextMenu]);
+
+  // Handle New Event button click with positioning
+  const handleNewEvent = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (newEventButtonRef.current) {
+      const buttonRect = newEventButtonRef.current.getBoundingClientRect();
+      const cardWidth = 400; // Card width from CSS
+      const cardHeight = 600; // Estimated max height
+      const margin = 10; // Margin from edges
+      
+      // Calculate initial position (to the left of the button)
+      let x = buttonRect.left - cardWidth - margin;
+      let y = buttonRect.top;
+      
+      // Check if card would go off the left edge of the screen
+      if (x < margin) {
+        // If so, position it to the right of the button instead
+        x = buttonRect.right + margin;
+      }
+      
+      // Check if card would go off the right edge of the screen
+      if (x + cardWidth > window.innerWidth - margin) {
+        // Position it centered under the button as fallback
+        x = buttonRect.left + (buttonRect.width / 2) - (cardWidth / 2);
+        y = buttonRect.bottom + margin;
+      }
+      
+      // Ensure it doesn't go off the left edge (final check)
+      if (x < margin) {
+        x = margin;
+      }
+      
+      // Ensure it doesn't go off the right edge (final check)
+      if (x + cardWidth > window.innerWidth - margin) {
+        x = window.innerWidth - cardWidth - margin;
+      }
+      
+      // Check if card would go off the bottom of the screen
+      if (y + cardHeight > window.innerHeight - margin) {
+        // Position it above the button instead
+        y = buttonRect.top - cardHeight - margin;
+      }
+      
+      // Ensure it doesn't go off the top edge
+      if (y < margin) {
+        y = margin;
+      }
+      
+      setEventCardPosition({ x, y });
+      setShowEventCard(true);
+    }
+  };
+
+  // Handle event card close
+  const handleEventCardClose = () => {
+    setShowEventCard(false);
+  };
+
+  // Handle event card save
+  const handleEventCardSave = (eventData) => {
+    onNewEvent(eventData);
+    setShowEventCard(false);
+  };
 
   // Get month headers - Implements D1.2
   const getMonthHeaders = () => {
@@ -521,7 +592,8 @@ const HeatmapCalendar = ({
           </button>
           <button 
             className="btn btn-secondary btn-event"
-            onClick={onNewEvent}
+            ref={newEventButtonRef}
+            onClick={handleNewEvent}
           >
             + New Event
           </button>
@@ -541,6 +613,17 @@ const HeatmapCalendar = ({
       {/* Tooltip for hovered cell */}
       {hoveredCell && (
         <CellTooltip hoveredCell={hoveredCell} />
+      )}
+
+      {/* Event card */}
+      {showEventCard && (
+        <EventCard
+          event={null}
+          projects={projects}
+          onSave={handleEventCardSave}
+          onClose={handleEventCardClose}
+          position={eventCardPosition}
+        />
       )}
     </div>
   );

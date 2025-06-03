@@ -133,9 +133,6 @@ const EventModal = ({ event, projects, onSave, onClose }) => {
     }
   };
 
-  // Get selected project for preview
-  const selectedProject = projects.find(p => p.id === formData.projectId);
-
   // Helper function to format date from YYYY-MM-DD to dd/mm/yy
   const formatDateToShort = (dateString) => {
     if (!dateString) return '';
@@ -412,38 +409,6 @@ const EventModal = ({ event, projects, onSave, onClose }) => {
                   {errors.date || errors.time}
                 </div>
               )}
-            </div>
-
-            {/* Event preview */}
-            <div className="event-preview">
-              <div className="preview-label">Preview:</div>
-              <div className="preview-event">
-                <div 
-                  className={`event-type-badge ${formData.type}`}
-                  style={{ 
-                    backgroundColor: selectedProject?.color || '#6b7280' 
-                  }}
-                >
-                  {formData.type}
-                </div>
-                <div className="preview-event-details">
-                  <div className="preview-event-name">
-                    {formData.name || `${formData.type} name`}
-                  </div>
-                  <div className="preview-event-project">
-                    {selectedProject ? (
-                      <span style={{ color: selectedProject.color }}>
-                        {selectedProject.name}
-                      </span>
-                    ) : (
-                      'Select a project'
-                    )}
-                  </div>
-                  <div className="preview-event-datetime">
-                    {formatDateForDisplay()}
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Warning for deadlines */}

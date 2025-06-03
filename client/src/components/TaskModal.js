@@ -76,7 +76,7 @@ const TaskModal = ({ task, project, events, onSave, onClose }) => {
     }
   };
 
-  // Get selected event for preview
+  // Get selected event for event details
   const selectedEvent = events.find(e => e.id === formData.eventId);
 
   // Sort events by date for better UX
@@ -149,27 +149,6 @@ const TaskModal = ({ task, project, events, onSave, onClose }) => {
               </select>
               <div className="form-help">
                 Associating a task with an event helps track progress toward specific milestones or deadlines.
-              </div>
-            </div>
-
-            {/* Task preview */}
-            <div className="task-preview">
-              <div className="preview-label">Preview:</div>
-              <div className="preview-task">
-                <div className="task-checkbox-preview">
-                  <div className="checkbox-empty" />
-                </div>
-                <div className="task-content-preview">
-                  <div className="task-name-preview">
-                    {formData.name || 'Task name'}
-                  </div>
-                  {selectedEvent && (
-                    <div className={`task-event-badge-preview ${selectedEvent.type}`}>
-                      <Calendar size={10} />
-                      {selectedEvent.name}
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
 

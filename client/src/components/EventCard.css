@@ -1,0 +1,416 @@
+/* Event Card Styles */
+.event-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  width: 400px;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: bubbleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: top right;
+}
+
+@keyframes bubbleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Header */
+.event-card-header {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--surface-hover);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.event-card-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Body */
+.event-card-body {
+  padding: var(--spacing-md);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* Footer */
+.event-card-footer {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  background-color: var(--surface-hover);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+/* Form styles - reuse from EventModal */
+.event-card .form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.event-card .form-label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.event-card .input {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.event-card .input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.event-card .input-error {
+  border-color: var(--error-color);
+}
+
+.event-card .form-error {
+  color: var(--error-color);
+  font-size: 0.75rem;
+  margin-top: var(--spacing-xs);
+}
+
+/* Event type selector */
+.event-card .event-type-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+/* Inline event type selector */
+.event-card .event-type-selector-inline {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.event-card .radio-option-inline {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  flex: 1;
+  justify-content: center;
+}
+
+.event-card .radio-option-inline:hover {
+  border-color: var(--primary-color);
+  background-color: var(--surface-hover);
+}
+
+.event-card .radio-option-inline input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.event-card .radio-option-inline input[type="radio"]:checked + .radio-label-inline .radio-icon {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.event-card .radio-option-inline:has(input[type="radio"]:checked) {
+  border-color: var(--primary-color);
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.event-card .radio-label-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.event-card .radio-option {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-sm);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.event-card .radio-option:hover {
+  border-color: var(--primary-color);
+  background-color: var(--surface-hover);
+}
+
+.event-card .radio-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.event-card .radio-option input[type="radio"]:checked + .radio-label .radio-icon {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.event-card .radio-option input[type="radio"]:checked ~ .radio-description {
+  color: var(--text-primary);
+}
+
+.event-card .radio-option:has(input[type="radio"]:checked) {
+  border-color: var(--primary-color);
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.event-card .radio-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  font-size: 0.875rem;
+}
+
+.event-card .radio-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.625rem;
+  font-weight: bold;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.event-card .radio-icon.milestone {
+  background-color: var(--text-muted);
+}
+
+.event-card .radio-icon.deadline {
+  background-color: var(--error-color);
+}
+
+.event-card .radio-description {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+/* DateTime inputs */
+.event-card .datetime-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+}
+
+.event-card .date-input-group,
+.event-card .time-input-group {
+  position: relative;
+}
+
+.event-card .input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.event-card .date-input-group input,
+.event-card .time-input-group input {
+  padding-left: 36px;
+}
+
+/* Warning message */
+.event-card .warning-message {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background-color: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  border-radius: var(--radius);
+  color: #ea580c;
+  font-size: 0.75rem;
+}
+
+.event-card .warning-message strong {
+  color: #c2410c;
+}
+
+/* Form help text */
+.event-card .form-help {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: var(--spacing-xs);
+  line-height: 1.4;
+}
+
+/* Date display styling */
+.event-card .date-display {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  color: var(--success-color);
+  background: var(--surface);
+  padding: 2px 4px;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Button styles */
+.event-card .btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+.event-card .btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.event-card .btn-primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.event-card .btn-secondary {
+  background-color: var(--surface);
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+.event-card .btn-secondary:hover {
+  background-color: var(--surface-hover);
+  border-color: var(--primary-color);
+  color: var(--text-primary);
+}
+
+.event-card .btn-ghost {
+  background-color: transparent;
+  color: var(--text-muted);
+  border: none;
+  padding: var(--spacing-xs);
+}
+
+.event-card .btn-ghost:hover {
+  background-color: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.event-card .btn-sm {
+  padding: var(--spacing-xs);
+  font-size: 0.75rem;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .event-card {
+    width: 95vw;
+    margin: var(--spacing-sm);
+  }
+  
+  .event-card-header,
+  .event-card-body,
+  .event-card-footer {
+    padding: var(--spacing-sm);
+  }
+  
+  .event-card .datetime-inputs {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .event-card .radio-option {
+    padding: var(--spacing-sm);
+  }
+  
+  .event-card .radio-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 0.5rem;
+  }
+  
+  .event-card .radio-label {
+    font-size: 0.8rem;
+  }
+  
+  .event-card .radio-description {
+    font-size: 0.7rem;
+  }
+}
+
+/* Focus styles for accessibility */
+.event-card .radio-option:focus-within {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.event-card .date-input-group input:focus,
+.event-card .time-input-group input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Scrollbar styling */
+.event-card-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.event-card-body::-webkit-scrollbar-track {
+  background: var(--surface-hover);
+  border-radius: 3px;
+}
+
+.event-card-body::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.event-card-body::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+} 

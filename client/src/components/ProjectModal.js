@@ -181,17 +181,6 @@ const ProjectModal = ({ project, onSave, onClose }) => {
                 <div className="form-error">{errors.color}</div>
               )}
             </div>
-
-            {/* Project preview */}
-            <div className="project-preview">
-              <div className="preview-label">Preview:</div>
-              <div className="preview-card" style={{ borderLeftColor: formData.color }}>
-                <div className="preview-title" style={{ color: formData.color }}>
-                  {formData.name || 'Project Name'}
-                </div>
-                <div className="preview-subtitle">0/0 tasks completed</div>
-              </div>
-            </div>
           </div>
 
           <div className="modal-footer">

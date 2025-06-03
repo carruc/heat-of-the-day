@@ -244,7 +244,7 @@ function App() {
             onEventEdit={handleEditEvent}
             onEventDelete={handleDeleteEvent}
             onNewProject={() => setShowProjectModal(true)}
-            onNewEvent={() => setShowEventModal(true)}
+            onNewEvent={handleCreateEvent}
             showEventTitles={showEventTitles}
             onToggleEventTitles={handleToggleEventTitles}
           />

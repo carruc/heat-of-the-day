@@ -49,70 +49,6 @@
   line-height: 1.4;
 }
 
-/* Task preview */
-.task-preview {
-  margin-top: var(--spacing-lg);
-  padding: var(--spacing-md);
-  background-color: var(--surface-hover);
-  border-radius: var(--radius);
-}
-
-.preview-task {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: var(--spacing-sm);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  box-shadow: var(--shadow-sm);
-}
-
-.task-checkbox-preview {
-  flex-shrink: 0;
-}
-
-.task-checkbox-preview .checkbox-empty {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-sm);
-}
-
-.task-content-preview {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-.task-name-preview {
-  font-size: 0.875rem;
-  color: var(--text-primary);
-}
-
-.task-event-badge-preview {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  font-size: 0.625rem;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  text-transform: uppercase;
-  max-width: fit-content;
-}
-
-.task-event-badge-preview.milestone {
-  background-color: rgba(156, 163, 175, 0.2);
-  color: var(--text-muted);
-}
-
-.task-event-badge-preview.deadline {
-  background-color: rgba(239, 68, 68, 0.2);
-  color: var(--error-color);
-}
-
 /* Selected event details */
 .selected-event-details {
   margin-top: var(--spacing-md);
@@ -189,14 +125,6 @@
   line-height: 1.4;
 }
 
-/* Preview label */
-.preview-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: var(--spacing-sm);
-}
-
 /* Responsive design */
 @media (max-width: 768px) {
   .task-modal {
@@ -237,10 +165,6 @@
     gap: var(--spacing-xs);
   }
   
-  .task-name-preview {
-    font-size: 0.8rem;
-  }
-  
   .selected-event-details {
     padding: var(--spacing-sm);
   }
@@ -268,8 +192,7 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Animation for preview changes */
-.task-preview,
+/* Animation for event details */
 .selected-event-details {
   transition: all 0.2s ease-out;
 }
@@ -283,15 +206,4 @@ select {
   background-size: 16px;
   padding-right: 40px;
   appearance: none;
-}
-
-/* Task preview animation */
-@keyframes taskPreviewUpdate {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-  100% { transform: scale(1); }
-}
-
-.preview-task {
-  animation: taskPreviewUpdate 0.3s ease-out;
 } 
